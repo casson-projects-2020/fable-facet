@@ -7,6 +7,7 @@ terraform {
 variable "project_id" {}
 variable "region" {}
 variable "infra_bucket" {}
+variable "install_token" {}
 
 provider "google" {
   project = var.project_id
@@ -30,6 +31,9 @@ resource "google_cloudfunctions2_function" "function" {
   service_config {
     max_instance_count = 1
     available_memory   = "256Mi"
+    environment_variables = {
+      INTERNAL_TOKEN = var.install_token
+    }
   }
 }
 

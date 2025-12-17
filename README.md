@@ -9,9 +9,10 @@ It can be used as a tool to fictional writing, or as a game - you play as the pr
 
 If you landed here from Fable Facet site and wants to install Your-Fable-Cloud, please click the link below and follow the instructions:
 ```
-  [![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/casson-projects-2020/fable-facet&cloudshell_tutorial=tutorial.md)
+  [![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/casson-projects-2020/fable-facet&cloudshell_tutorial=tutorial.md&ephemeral=true)
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTc3MTk5ODI4NywxOTk4MjE5Mjg0LC0yNj
-I0NDU2OTcsLTY0NDAzNTE2NCwtMjM2NjAwOTkyXX0=
+eyJoaXN0b3J5IjpbMTg0OTQ2MTgzMSwxNzcxOTk4Mjg3LDE5OT
+gyMTkyODQsLTI2MjQ0NTY5NywtNjQ0MDM1MTY0LC0yMzY2MDA5
+OTJdfQ==
 -->

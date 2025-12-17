@@ -21,8 +21,14 @@ zip -r ../fablefacet.zip .
 cd ..
 gsutil cp fablefacet.zip gs://${BUCKET_NAME}/source/fablefacet.zip
 
-gcloud services enable cloudfunctions.googleapis.com cloudbuild.googleapis.com run.googleapis.com
-
+gcloud services enable \
+    cloudresourcemanager.googleapis.com \
+    compute.googleapis.com \
+    run.googleapis.com \
+    cloudfunctions.googleapis.com \
+    cloudbuild.googleapis.com \
+    artifactregistry.googleapis.com
+    
 echo "🛠️ Initing Terraform..."
 terraform init -reconfigure -backend-config="bucket=${BUCKET_NAME}" -backend-config="prefix=terraform/state"
 

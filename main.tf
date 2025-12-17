@@ -45,3 +45,11 @@ resource "google_cloud_run_service_iam_member" "public_access" {
   role   = "roles/run.invoker"
   member = "allUsers"
 }
+
+resource "google_cloud_run_service_iam_member" "central_invoker" {
+  location = google_cloudfunctions2_function.function.location
+  project  = google_cloudfunctions2_function.function.project
+  service  = google_cloudfunctions2_function.function.name
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:108378260537-compute@developer.gserviceaccount.com"
+}

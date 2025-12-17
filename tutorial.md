@@ -14,7 +14,8 @@ If you create a new one, close the tab afterwards, return to this tutorial and s
 ## Step2: Run the installer
 ### Click below or copy-paste the  command on the terminal 
 
-<walkthrough-instructions><pre>chmod +x entrypoint.sh && ./entrypoint.sh</pre> </walkthrough-instructions>
+```bash
+chmod +x entrypoint.sh && ./entrypoint.sh
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTI2OTk3ODY1NF19
+eyJoaXN0b3J5IjpbLTU4NjA2NzY4NCwxMjY5OTc4NjU0XX0=
 -->

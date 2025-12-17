@@ -21,7 +21,7 @@ gcloud config set project {{project-id}}
 
 ## Step3: Run the installer
 ### Run the linux commands to install
-Click to copy this code to the terminal and type enter. This is the last step.
+Click to copy this code to the terminal and type enter. This is the last step. Creating the infrastructure may take a while. After you see the "All done" message in the terminal, you can close this tab and get back to FableFacet site to use the AI Storytelling feature.
 
 ```bash
 chmod +x entrypoint.sh && ./entrypoint.sh

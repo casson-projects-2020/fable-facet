@@ -3,10 +3,10 @@ In conjunction with Fable Facet site allows you to use your 1000 Gemini free cal
 
 This is a "Open In Google Cloud Shell" repo - it will create in a Google Cloud Platform the infrastructure the site https://fablefacet.com needs to allow a user to use his own 1000 Gemini API free calls (generously given to all by Google) to generate AI-driven stories. 
 
-They can be used as game - you play as the protagonist and the AI generates 
+They can be used as a game - you play as the protagonist and the AI generates the story as you go, as TTRPG adventures, or simply 
 
-> :warning: There are restrictions - don't install without visiting the site and reading about it. First, it will not work without Fable Facet site, and second, while
+> :warning: There are restrictions - don't install without visiting the site and reading about it. First, it will not work without Fable Facet site, and second, while this installer is MIT-licensed, other parts of the software are not open-source, and will fail  in any GCP account that is linked to Organizations (only personal, individual accounts can be used) 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE1OTA4OTQxNjJdfQ==
+eyJoaXN0b3J5IjpbLTE2ODg5NjA2MDddfQ==
 -->

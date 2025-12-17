@@ -11,7 +11,11 @@ If you don't see any project in the list above, click on "create a new project" 
 
 If you create a new one, close the tab afterwards, return to this tutorial and select your newly created project above.
 
+## Step2: Run the installer
+### Click below or copy-paste the  command on the terminal 
+
+```bash chmod +x entrypoint.sh && ./entrypoint.sh
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTc3OTA1MzI4MSw1MzU5NDM3NTcsLTE0OD
-c2NDM0XX0=
+eyJoaXN0b3J5IjpbLTk0NzU4NjM4OCwtNzc5MDUzMjgxLDUzNT
+k0Mzc1NywtMTQ4NzY0MzRdfQ==
 -->

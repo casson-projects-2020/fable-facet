@@ -1,36 +1,32 @@
 terraform {
   required_version = ">= 1.0"
   backend "gcs" {
-    # O script entrypoint.sh preencherá o bucket via -backend-config
-    prefix = "terraform/state"
   }
 }
 
 variable "project_id" {}
 variable "region" {}
+variable "infra_bucket" {}
 
 provider "google" {
   project = var.project_id
   region  = var.region
 }
 
-# Exemplo simplificado da Cloud Run Function (v2)
 resource "google_cloudfunctions2_function" "function" {
-  name        = "fable-facet-function"
-  location    = var.region
-  description = "Minha Cloud Run Function v2"
+  name     = "fable-facet-user"
+  location = var.region
 
   build_config {
-    runtime     = "python312" 
-    entry_point = "main"
+    runtime     = "python312"
+    entry_point = "main" 
     source {
       storage_source {
-        bucket = "${PROJECT_ID}-fable-data"
-        object = "fablefacet.zip"
+        bucket = var.infra_bucket
+        object = "source/fablefacet.zip"
       }
     }
   }
-
   service_config {
     max_instance_count = 1
     available_memory   = "256Mi"

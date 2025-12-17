@@ -16,6 +16,3 @@ If you create a new one, close the tab afterwards, return to this tutorial and s
 
 ```bash
 chmod +x entrypoint.sh && ./entrypoint.sh
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbLTU4NjA2NzY4NCwxMjY5OTc4NjU0XX0=
--->

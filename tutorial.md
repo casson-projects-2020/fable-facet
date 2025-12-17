@@ -13,14 +13,15 @@ If you create a new one, close the tab afterwards, return to this tutorial and s
 
 ## Step2: Configure the Cloud Shell 
 ### Configure the terminal to use the project
-Click to copy this code to the terminal:
+Click to copy this code to the terminal. Type enter, then click on the "next" button.
 
 ```bash
 gcloud config set project {{project-id}}
 ```
 
 ## Step3: Run the installer
-### Click below or copy-paste the command on the terminal:
+### Run the linux commands to install
+Click to copy this code to the terminal and type enter. This is the last step.
 
 ```bash
 chmod +x entrypoint.sh && ./entrypoint.sh

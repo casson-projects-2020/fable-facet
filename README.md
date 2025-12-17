@@ -7,7 +7,12 @@ It can be used as a tool to fictional writing, or as a game - you play as the pr
 
 > :warning: There are restrictions - don't install without visiting the site and reading about it. First, it will not work without Fable Facet site, and second, while this installer is MIT-licensed, other parts of the software are not open-source, and will fail  in any GCP account that is linked to Organizations (only personal, individual accounts can be used).
 
+If you landed here from Fable Facet site and wants to install Your-Fable-Cloud, please click the link below and follow the instructions:
+
+```
+  [![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=http://path-to-repo/sample.git)
+```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTI2MjQ0NTY5NywtNjQ0MDM1MTY0LC0yMz
-Y2MDA5OTJdfQ==
+eyJoaXN0b3J5IjpbMTk5ODIxOTI4NCwtMjYyNDQ1Njk3LC02ND
+QwMzUxNjQsLTIzNjYwMDk5Ml19
 -->

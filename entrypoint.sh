@@ -4,7 +4,7 @@ set -e
 
 PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
 REGION="us-central1"
-BUCKET_NAME="${PROJECT_ID}-tfstate-fable"
+BUCKET_NAME="${PROJECT_ID}-fable-data"
 
 echo "🚀 Iniciando instalação no projeto: $PROJECT_ID"
 

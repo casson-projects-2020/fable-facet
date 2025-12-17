@@ -12,10 +12,10 @@ The system is designed to be inside the always-free tier on GCP, but if you alre
 
 If you landed here from Fable Facet site and wants to install Your-Fable-Cloud, please click the link below and follow the instructions (if you don't have a GCP account yet, you will need to create it first - please refer to Fable Facet site)
 
-[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/casson-projects-2020/fable-facet&cloudshell_tutorial=tutorial.md&ephemeral=true&show=teminal)
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/casson-projects-2020/fable-facet&cloudshell_tutorial=tutorial.md&ephemeral=true&show=terminal)
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2NDA1MjUxNzIsLTUwNzQ3MTQ3OCwxMT
+eyJoaXN0b3J5IjpbLTE0MDIzODQ3NDIsLTUwNzQ3MTQ3OCwxMT
 M5NTY3NzE2LC0xMjA4NTc4ODA5LDE3NzE5OTgyODcsMTk5ODIx
 OTI4NCwtMjYyNDQ1Njk3LC02NDQwMzUxNjQsLTIzNjYwMDk5Ml
 19

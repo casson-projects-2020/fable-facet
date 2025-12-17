@@ -21,12 +21,12 @@ resource "google_cloudfunctions2_function" "function" {
   description = "Minha Cloud Run Function v2"
 
   build_config {
-    runtime     = "python" 
+    runtime     = "python312" 
     entry_point = "main"
     source {
       storage_source {
-        bucket = "NOME_DO_BUCKET_COM_SEU_CODIGO"
-        object = "source.zip"
+        bucket = "${PROJECT_ID}-fable-data"
+        object = "fablefacet.zip"
       }
     }
   }

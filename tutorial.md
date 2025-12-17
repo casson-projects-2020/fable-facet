@@ -11,14 +11,18 @@ If you don't see any project in the list above, click on "create a new project" 
 
 If you create a new one, close the tab afterwards, return to this tutorial and select your newly created project above.
 
+## Step2: Configure the Cloud Shell 
 ### Configure the terminal to use the project
 Click to copy this code to the terminal:
 
 ```bash
 gcloud config set project {{project-id}}
+```
 
-## Step2: Run the installer
+## Step3: Run the installer
 ### Click below or copy-paste the command on the terminal:
 
 ```bash
 chmod +x entrypoint.sh && ./entrypoint.sh
+```
+

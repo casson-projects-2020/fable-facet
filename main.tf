@@ -31,6 +31,7 @@ resource "google_cloudfunctions2_function" "function" {
   service_config {
     max_instance_count = 1
     available_memory   = "256Mi"
+    max_instance_request_concurrency = 5
     environment_variables = {
       INTERNAL_TOKEN = var.install_token
     }

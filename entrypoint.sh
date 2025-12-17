@@ -16,6 +16,8 @@ else
     gsutil versioning set on gs://${BUCKET_NAME}
 fi
 
+gcloud services enable cloudfunctions.googleapis.com cloudbuild.googleapis.com run.googleapis.com
+
 echo "🛠️ Initing Terraform..."
 terraform init -backend-config="bucket=${BUCKET_NAME}"
 

@@ -4,8 +4,8 @@ terraform {
   }
 }
 
-variable "project_id" {}
-variable "region" {}
+variable "project_id"   {}
+variable "region"       { default = "us-central1" }
 variable "infra_bucket" {}
 
 variable "central_url" {
@@ -27,9 +27,43 @@ locals {
   central_api   = "https://api.fablefacet.com/register"
 }
 
+locals {
+  services = [
+    "cloudresourcemanager.googleapis.com",
+    "compute.googleapis.com",
+    "run.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "aiplatform.googleapis.com", # Esta é a API da Vertex AI / Gemini
+  ]
+}
+
+resource "google_project_service" "apis" {
+  for_each = toset(local.services)
+  project  = var.project_id
+  service  = each.key
+
+  disable_on_destroy = false
+}
+
+data "google_project" "target" {
+  project_id = var.project_id
+}
+
+resource "google_project_iam_member" "gemini_user" {
+  project = var.project_id
+  role    = "roles/aiplatform.user"
+  member  = "serviceAccount:${data.google_project.target.number}-compute@developer.gserviceaccount.com"
+  
+  depends_on = [google_project_service.apis]
+}
+
 resource "google_cloudfunctions2_function" "function" {
   name     = local.cf_name
   location = var.region
+
+depends_on = [google_project_service.apis]
 
   build_config {
     runtime     = "python312"
@@ -89,6 +123,7 @@ resource "null_resource" "registro_com_rollback" {
         -X POST "${local.central_api} \
         -H "Authorization: Bearer $TOKEN" \
         -H "Content-Type: application/json" \
+        -d "task=register" \
         -d "self=${self.triggers.cf_url}" \
         -d "user=${self.triggers.email}")
 

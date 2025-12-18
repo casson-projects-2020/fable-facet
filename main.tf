@@ -115,7 +115,7 @@ resource "null_resource" "registro_com_rollback" {
       echo "Waiting 10s for DNS and permissions to propagate..."
       sleep 10
 
-      TOKEN=$(gcloud auth print-identity-token)
+      TOKEN=$(gcloud auth print-identity-token --audience="https://api.fablefacet.com")
       
       echo "Registering Your-Fable-Cloud with Fable Facet..."
       

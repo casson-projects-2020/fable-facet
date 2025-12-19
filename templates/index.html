@@ -45,18 +45,85 @@ async function createProject()
         {
             status.textContent = "✅ " + data.message;
             elem( "loader" ).style.display = "none";
+            elem( "step2" ).style.display = "block"
         }
         else
         {
-            status.textContent = "❌ Error: please click 'restart'";
+            status.textContent = "❌ Error: please click 'restart': " + data.error;
             elem( "loader" ).style.display = "none";
+            elem( "restart" ).style.display = "block";
         }
     } 
     catch( err ) 
     {
         status.textContent = "❌ Error: please click 'restart': " + err;
         elem( "loader" ).style.display = "none";
+        elem( "restart" ).style.display = "block";
     }
+}
+
+
+async function selectProject() 
+{
+    projs = elem( "project_id" );
+
+    step1.style.display = "none";
+
+    try 
+    {
+        const response = await fetch( './set-project', 
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name_id: projs[ projs.selectedIndex ].textContent })
+        });
+
+        const data = await response.json();
+
+        if( data.success )
+        {
+            status.textContent = "✅ " + data.message;
+            elem( "loader" ).style.display = "none";
+            elem( "step2" ).style.display = "block";
+        }
+        else
+        {
+            status.textContent = "❌ Error: please click 'restart': " + data.error;
+            elem( "loader" ).style.display = "none";
+            elem( "restart" ).style.display = "block";
+        }
+    } 
+    catch( err ) 
+    {
+        status.textContent = "❌ Error: please click 'restart': " + err;
+        elem( "loader" ).style.display = "none";
+        elem( "restart" ).style.display = "block";
+    }
+}
+
+
+async function install() 
+{
+    elem( "step2" ).style.display = "none";
+    elem( "terminal" ).style.display = "block";
+
+    const logWindow = document.getElementById( 'logs' );
+    const eventSource = new EventSource( '/stream-logs' );
+
+    eventSource.onmessage = function( event ) 
+    {
+        logWindow.innerHTML += event.data + "\n";
+        logWindow.scrollTop = logWindow.scrollHeight;
+
+        if( event.data.includes( "[INSTALLATION COMPLETED]" ))
+            eventSource.close();
+    };
+
+    eventSource.onerror = function() 
+    {
+        logWindow.innerHTML += "⚠️ Connection closed or server error\n";
+        eventSource.close();
+    };
 }
 </script>
 </head>
@@ -72,14 +139,16 @@ async function createProject()
         <div id="step1">
             <h2>Select the Project you want to use to install Your-Fable-Cloud</h2>
             <p>On Google Cloud Platform (GCP) a project is a workspace used to group resources</p>        
-            <select name="project_id">
+            <select name="project_id" id="project_id">
             {% for p in projects %}
                 <option value="{{ p.projectId }}">{{ p.name }} ({{ p.projectId }})</option>
             {% endfor %}
             </select>
-            <button onclick="selectProject()">Select</button>
+            <button onclick="selectProject()">Select and use existing project</button>
+            <br/><br/><hr/>
+            <h2>OR create a new one</h2>
             <p>If you don't see any projects above or you wish to create a dedicated one, type a 
-                name below (any name, GCP will change it to be unique) and click create.</p>     
+                name below and click create.</p>     
             <input type="text" name="new_project" id="new_project" placeholder="Ex: My-Fable-Cloud" 
                 maxlength="30" />
             <br/><br/>
@@ -94,6 +163,12 @@ async function createProject()
                 </style><rect class="spinner_hzlK" x="1" y="1" width="6" height="22"/><rect class="spinner_hzlK spinner_koGT" x="9" y="1" 
                 width="6" height="22"/><rect class="spinner_hzlK spinner_YF1u" x="17" y="1" width="6" height="22"/>
             </svg>
+        </div>
+        <button id="restart" style="display: none" onclick="location.reload()">restart</button>
+        <button id="step2" style="display: none" onclick="install()">Install Fable Cloud</button>
+        <div id="terminal" style="display: none">
+            <h3>Logs de Execução:</h3>
+            <pre id="logs"></pre>
         </div>
     </div>
     </section>

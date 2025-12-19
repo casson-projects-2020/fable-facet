@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../static/style.css">  
+<title>Your Fable Clour - AI Storytelling using your free infrastructure</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com" class="genos_first ">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" class="genos_sec ">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Genos:ital,wght@0,100..900;1,100..900&amp;display=block" crossorigin="true" class="genos_last ">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Blinker:wght@100;200;300;400;600;700;800;900&amp;display=block" crossorigin="true" class="blinker_link ">
+<script>
+elem = function( id )
+{
+    return document.getElementById( id );
+}
+
+
+async function createProject() 
+{
+    const projectName = elem( "new_project" ).value;
+    console.log( projectName );
+    const status = elem( "status" );
+
+    if( !projectName || projectName.length < 6 )
+    {
+        status.textContent = "⚠️ Please enter a valid project name (min 6 characters, max 30)";
+        return;
+    }
+    step1.style.display = "none";
+
+    status.textContent = "⏳ Creating project on GCP... that can take a minute...";
+    elem( "loader" ).style.display = "block";
+
+    try 
+    {
+        const response = await fetch( './create-project', 
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: projectName })
+        });
+
+        const data = await response.json();
+
+        if( data.success ) 
+        {
+            status.textContent = "✅ " + data.message;
+            elem( "loader" ).style.display = "none";
+        }
+        else
+        {
+            status.textContent = "❌ Error: please click 'restart'";
+            elem( "loader" ).style.display = "none";
+        }
+    } 
+    catch( err ) 
+    {
+        status.textContent = "❌ Error: please click 'restart'";
+        elem( "loader" ).style.display = "none";
+    }
+}
+</script>
+</head>
+<body>
+    <header>
+        <div class="header_main">
+            <div class="bg_placeholder "></div>
+            <h1>Your-Fable-Cloud Installer</h1>
+        </div>
+    </header>
+    <section id="main_section">
+    <div class="container">
+        <div id="step1">
+            <h2>Select the Project you want to use to install Your-Fable-Cloud</h2>
+            <p>On Google Cloud Platform (GCP) a project is a workspace used to group resources</p>        
+            <select name="project_id">
+                <option value="{{ p.projectId }}">{{ p.name }} ({{ p.projectId }})</option>
+            </select>
+            <button onclick="selectProject()">Select</button>
+            <p>If you don't see any projects above or you wish to create a dedicated one, type a 
+                name below (any name, GCP will change it to be unique) and click create.</p>     
+            <input type="text" name="new_project" id="new_project" placeholder="Ex: My-Fable-Cloud" 
+                maxlength="30" />
+            <br/><br/>
+            <button onclick="createProject()">Create and use new project</button>
+        </div>
+        <div id="status" class="status"></div> 
+        <div id="loader" style="display: none; text-align: center;">
+            <svg width="60" height="120" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <style>.spinner_hzlK{animation:spinner_vc4H .8s linear infinite;animation-delay:-.8s; fill: black;}
+                .spinner_koGT{animation-delay:-.65s; fill: black;}
+                .spinner_YF1u{animation-delay:-.5s}@keyframes spinner_vc4H{0%{y:1px;height:22px}93.75%{y:5px;height:14px;opacity:.2}}
+                </style><rect class="spinner_hzlK" x="1" y="1" width="6" height="22"/><rect class="spinner_hzlK spinner_koGT" x="9" y="1" 
+                width="6" height="22"/><rect class="spinner_hzlK spinner_YF1u" x="17" y="1" width="6" height="22"/>
+            </svg>
+        </div>
+    </div>
+    </section>
+</body>
+</html>

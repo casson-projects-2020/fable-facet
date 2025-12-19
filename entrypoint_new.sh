@@ -3,7 +3,10 @@
 clear
 pip install flask --user -q
 
-python3 tutorial.py &
+fuser -k 8080/tcp > /dev/null 2>&1
+
+export FLASK_ENV=production
+python3 server.py > .flask_logs 2>&1 &
 
 sleep 2
 
@@ -14,7 +17,9 @@ clear
 echo ""
 echo "===================================================="
 echo "  FABLE FACET WIZARD READY "
+echo
 echo "  Click on the link below to see the wizard"
+echo
 echo "  $WEB_URL"
 echo "===================================================="
 echo ""

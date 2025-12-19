@@ -105,25 +105,13 @@ async function selectProject()
 async function install() 
 {
     elem( "step2" ).style.display = "none";
-    elem( "terminal" ).style.display = "block";
+    elem( "completed" ).style.display = "block";
 
-    const logWindow = document.getElementById( 'logs' );
-    const eventSource = new EventSource( '/stream-logs' );
-
-    eventSource.onmessage = function( event ) 
+    const response = await fetch( './install', 
     {
-        logWindow.innerHTML += event.data + "\n";
-        logWindow.scrollTop = logWindow.scrollHeight;
-
-        if( event.data.includes( "[INSTALLATION COMPLETED]" ))
-            eventSource.close();
-    };
-
-    eventSource.onerror = function() 
-    {
-        logWindow.innerHTML += "⚠️ Connection closed or server error\n";
-        eventSource.close();
-    };
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    });
 }
 </script>
 </head>
@@ -166,9 +154,8 @@ async function install()
         </div>
         <button id="restart" style="display: none" onclick="location.reload()">restart</button>
         <button id="step2" style="display: none" onclick="install()">Install Fable Cloud</button>
-        <div id="terminal" style="display: none">
-            <h2>Execution logs</h3>
-            <pre id="logs"></pre>
+        <div id="completed" style="display: none">
+            Installer running... you can close this tab and follow the logs on the Google Cloud Shell terminal.
         </div>
     </div>
     </section>

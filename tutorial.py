@@ -32,8 +32,8 @@ def set_project():
     try:
         subprocess.run(
             ['gcloud', 'config', 'set', 'project', project_id],
-            stdout=sys.stdout, 
-            stderr=sys.stderr 
+            stdout=sys.stdout,
+            stderr=sys.stderr
         )
 
         return jsonify(
@@ -90,7 +90,7 @@ def create_project():
         )
 
         subprocess.run(
-            ['gcloud', 'config', 'set', 'project', project_id],
+            [ 'gcloud', 'config', 'set', 'project', project_id ],
             stdout=sys.stdout, 
             stderr=sys.stderr 
         )
@@ -101,7 +101,7 @@ def create_project():
             'message': f"Project '{project_name}' created and selected"
         }), 200
 
-    except Exception e:
+    except Exception as e:
         return jsonify({
             'success': False, 
             'error': f"gcloud failed to create the project {e}"
@@ -125,6 +125,7 @@ def yfc_installer_run():
         'success': True, 
         'message': f"Installer running"
     }), 200
+
 
 if __name__ == '__main__':
     app.run( host = '0.0.0.0', port=8080 )

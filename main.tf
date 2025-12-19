@@ -8,11 +8,6 @@ variable "project_id"   {}
 variable "region"       { default = "us-central1" }
 variable "infra_bucket" {}
 
-variable "central_url" {
-  description = "URL da Cloud Function Central que processa os registros"
-  type        = string
-}
-
 data "google_client_openid_userinfo" "me" {}
 
 provider "google" {

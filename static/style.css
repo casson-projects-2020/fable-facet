@@ -146,7 +146,9 @@ input[type='text']
 }
 #logs
 {
-    width: 90px;
+    width: 90%;
     height: 400px;
     overflow: scroll;
+    background-color: black;
+    color: white;
 }

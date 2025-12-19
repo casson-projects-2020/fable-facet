@@ -1,0 +1,141 @@
+*
+{   box-sizing: border-box;   }
+:root
+{   /* mobile first */
+    /* tamanho do header eh o mesmo para mobile e desktop */
+    --header-height: max( 60px, min( 10dvw, 10dvh ));
+
+    /* mesmo tamanho do header no mobile */
+    --footer-height: max( 100px, min( 10dvw, 10dvh ));
+
+    /* inicialmente invisivel a side bar. Vai ter tamanhos diferentes em mobile
+        e desktop, mas vai ser controlado pelas paginas de nav e header*/
+    --sidebar-width: 0px;
+
+    /* cores do tema */
+    --theme-darkest: rgb( 0, 16, 0 );
+    --theme-dark: rgb( 0, 22, 0 );
+    --theme-dark-op0: rgba( 0, 22, 0, 0 );
+    --theme-medium: rgb( 0, 32, 0 );
+    --theme-light: rgb( 0, 42, 0 );
+    --theme-lighter: rgb( 0, 47, 0 );
+    --theme-lightest: rgb( 0, 122, 0 );
+    --theme-megalight: rgb( 120, 200, 120 );
+    --theme-ultralight: #B0FFB0;
+
+    --_w: 100dvw;
+    --screen-width-unitless: tan( atan2( var( --_w ), 1px ));
+
+    --_h: 100dvh;
+    --screen-height-unitless: tan( atan2( var( --_h ), 1px ));
+}
+@media ( min-width: 769px ) 
+{   /* desktop ou medias com mais de 769px logicos de largura */
+    :root
+    {
+        /* sem footer no desktop */
+        --footer-height: 0px;
+    }
+}
+body
+{   display: grid;
+    overflow: hidden;
+    background-color: var( --theme-darkest );
+    margin: 0;
+    padding: 0;
+    height: 100dvh;
+    width: 100dvw;
+    min-width: 320px;
+    grid-template-rows: var( --header-height ) calc( 100dvh - var( --header-height ) - var( --footer-height ));
+    grid-template-areas: 
+        "header"
+        "main";
+}
+.header_main
+{   height: var( --header-height );
+    grid-area: header;
+
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+
+    width: 100dvw;
+}
+#main_section
+{   grid-area: main;
+    overflow: hidden;
+    width: 100dvw;
+    padding: 15px;
+}
+.bg_placeholder
+{
+    grid-area: ffacet_logo;
+    height: var( --header-height );
+    width: 170px;
+    background-image: url( "../static/fablefacet.svg" );
+    background-size: 80%;
+    background-repeat: no-repeat;
+    background-position: 20% center;
+}
+h1
+{
+    font-family: Genos, sans-serif;
+    color: white;
+    font-weight: 400;
+    display: inline;
+    font-size: 2rem;
+}
+.container 
+{   
+    background: var( --theme-ultralight );  
+    padding: 30px;
+    border-radius: 12px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    width: 100%; 
+    max-width: 500px; 
+}
+h2 
+{ 
+    color: var(--theme-darkest); 
+    margin-top: 0; 
+    font-family: Genos, sans-serif;
+}
+select 
+{ 
+    width: 100%; 
+    padding: 12px; 
+    margin: 20px 0; 
+    border: 2px solid #ddd; 
+    border-radius: 8px; font-size: 16px; 
+}
+button 
+{ 
+    background-color: rgb( 0, 47, 0 );
+    color: white; 
+    border: none; 
+    padding: 12px 24px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    width: 100%; 
+}
+button:hover 
+{   background-color: var( --theme-lightest ); 
+}
+p
+{
+    font-family: Blinker, sans-serif;
+}
+input[type='text']
+{
+    width: 100%;
+    padding: 12px; 
+}
+.status 
+{ 
+    margin-top: 20px; 
+    color: var( --theme-darkest ); 
+    font-size: 1rem;
+    text-align: center; 
+    font-family: Blinker, sans-serif;
+}

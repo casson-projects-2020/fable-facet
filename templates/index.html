@@ -104,15 +104,22 @@ async function selectProject()
 
 async function installer_run() 
 {
-    alert();
     elem( "step2" ).style.display = "none";
     elem( "completed" ).style.display = "block";
 
-    const response = await fetch( './installer_run', 
+    try 
     {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    });
+        const response = await fetch( './installer_run', 
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pass: "true" })
+        });
+    }
+    catch( err ) 
+    {
+        alert( err );
+    }
 }
 </script>
 </head>

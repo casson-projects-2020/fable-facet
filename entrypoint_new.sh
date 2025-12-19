@@ -9,8 +9,6 @@ sleep 2
 
 WEB_URL="https://8080-dot-$(cloudshell edit-info | grep 'host' | cut -d' ' -f2 | cut -d'.' -f1)-dot-devshell.appspot.com"
 
-clear
-
 echo ""
 echo "===================================================="
 echo "  FABLE FACET WIZARD READY "

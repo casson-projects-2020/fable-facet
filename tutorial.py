@@ -25,7 +25,7 @@ def index():
 def set_project():
 
     data = request.json
-    project_name_id = data.get( 'name' ).split( "(" )
+    project_name_id = data.get( 'name_id' ).split( "(" )
     project_id = project_name_id[ 1 ].replace( ")", "" ).trim()
 
     try:

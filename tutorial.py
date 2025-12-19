@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, jsonify
+from flask import Flask, render_template, request, redirect, jsonify, Response
 import subprocess
 import json
 import uuid
@@ -24,8 +24,10 @@ def index():
 @app.route( '/set-project', methods=['POST'])
 def set_project():
 
-    project_id = request.form.get( 'project_id' )
-    
+    data = request.json
+    project_name_id = data.get( 'name' ).split( "(" )
+    project_id = project_name_id[ 1 ].replace( ")", "" ).trim()
+
     try:
         subprocess.run([ 'gcloud', 'config', 'set', 'project', project_id ])
         return jsonify(
@@ -74,8 +76,8 @@ def create_project():
             print( "project id is unique and can be used" )
 
     try:
-        #subprocess.run([ 'gcloud', 'projects', 'create', project_id, f'--name={project_name}' ], check=True )
-        #subprocess.run([ 'gcloud', 'config', 'set', 'project', project_id ], check=True )
+        subprocess.run([ 'gcloud', 'projects', 'create', project_id, f'--name={project_name}' ], check=True )
+        subprocess.run([ 'gcloud', 'config', 'set', 'project', project_id ], check=True )
         
         return jsonify(
         {
@@ -87,6 +89,31 @@ def create_project():
             'success': False, 
             'error': "gcloud failed to create the project"
         }), 500
+
+
+def install():
+    process = subprocess.Popen(
+        [ './entrypoint.sh' ], 
+        stdout = subprocess.PIPE, 
+        stderr = subprocess.STDOUT, 
+        text = True,
+        bufsize=1
+    )
+
+    for line in iter( process.stdout.readline, "" ):
+        yield f"data: {line}\n\n"
+
+    process.stdout.close()
+    yield "data: [INSTALLATION COMPLETED]\n\n"
+
+
+@app.route('/stream-logs')
+def stream_logs():
+    subprocess.run([ 'clear' ])
+    subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
+
+    # Retorna a resposta com o mimetype especial para streaming
+    return Response( install(), mimetype='text/event-stream' )
 
 
 if __name__ == '__main__':

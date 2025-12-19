@@ -139,16 +139,7 @@ input[type='text']
     text-align: center; 
     font-family: Blinker, sans-serif;
 }
-#terminal
+#completed
 {
-    width: 90%;
-    padding: 12px;
-}
-#logs
-{
-    width: 90%;
-    height: 400px;
-    overflow: scroll;
-    background-color: black;
-    color: white;
+    font-family: Blinker, sans-serif;
 }

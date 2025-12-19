@@ -80,7 +80,8 @@ depends_on = [google_project_service.apis]
   service_config {
     max_instance_count = 1
     available_memory   = "256Mi"
-    max_instance_request_concurrency = 5
+    max_instance_request_concurrency = 1
+    timeout_seconds = 60
   }
 }
 

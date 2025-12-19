@@ -54,7 +54,7 @@ def index():
     projects = get_projects()
     return render_template_string(HTML_TEMPLATE, projects=projects)
 
-@app.route('/set-project', method=['POST'])
+@app.route('/set-project', methods=['POST'])
 def set_project():
     project_id = request.form.get('project_id')
     # Executa o comando de configuração no terminal do Cloud Shell

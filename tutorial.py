@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, jsonify, Response
 import subprocess
 import json
+import sys
 import uuid
 
 
@@ -29,18 +30,23 @@ def set_project():
     project_id = project_name_id[ 1 ].replace( ")", "" ).strip()
 
     try:
-        subprocess.run([ 'gcloud', 'config', 'set', 'project', project_id ])
+        subprocess.run(
+            ['gcloud', 'config', 'set', 'project', project_id],
+            stdout=sys.stdout, 
+            stderr=sys.stderr 
+        )
+
         return jsonify(
         {
             'success': True, 
             'message': f"Project '{project_id}' selected"
         }), 200
 
-    except subprocess.CalledProcessError as e:
+    except Exception as e:
         return jsonify(
         {
             'success': False, 
-            'error': "gcloud failed to select the project"
+            'error': f"gcloud failed to select the project {e}"
         }), 500
 
 
@@ -76,18 +82,29 @@ def create_project():
             print( "project id is unique and can be used" )
 
     try:
-        subprocess.run([ 'gcloud', 'projects', 'create', project_id, f'--name={project_name}' ], check=True )
-        subprocess.run([ 'gcloud', 'config', 'set', 'project', project_id ], check=True )
-        
+        subprocess.run(
+            [ 'gcloud', 'projects', 'create', project_id, f'--name={project_name}'],
+            stdout=sys.stdout, 
+            stderr=sys.stderr,
+            check=True
+        )
+
+        subprocess.run(
+            ['gcloud', 'config', 'set', 'project', project_id],
+            stdout=sys.stdout, 
+            stderr=sys.stderr 
+        )
+
         return jsonify(
         {
             'success': True, 
             'message': f"Project '{project_name}' created and selected"
         }), 200
-    except subprocess.CalledProcessError as e:
+
+    except Exception e:
         return jsonify({
             'success': False, 
-            'error': "gcloud failed to create the project"
+            'error': f"gcloud failed to create the project {e}"
         }), 500
 
 
@@ -96,8 +113,12 @@ def yfc_installer_run():
     print( "running installer..." )
 
     subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
-    subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
-    subprocess.run([ './entrypoint.sh' ])
+    subprocess.Popen(
+        ['./entrypoint.sh'],
+        stdout=None, 
+        stderr=None,
+        bufsize=1
+    )
 
     return jsonify(
     {

@@ -134,7 +134,7 @@ resource "null_resource" "registro_com_rollback" {
 
       if [ "$HTTP_RESPONSE" != "200" ]; then
         echo "----------------------------------------------------------"
-        echo "Fatal Error registering (Status: $HTTP_RESPONSE)"
+        echo "Fatal Error registering \(Status: $HTTP_RESPONSE\)"
         echo "Fable Facet rejected the registration. Probable cause:"
         cat response_body.txt
         echo -e "\n----------------------------------------------------------"

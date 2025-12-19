@@ -5,8 +5,7 @@ pip install flask --user -q
 
 fuser -k 8080/tcp > /dev/null 2>&1
 
-export FLASK_ENV=production
-python3 tutorial.py > .flask_logs 2>&1 &
+python3 tutorial.py
 
 sleep 2
 

@@ -7,7 +7,9 @@ python3 tutorial.py &
 
 sleep 2
 
-WEB_URL="https://8080-dot-$(cloudshell edit-info | grep 'host' | cut -d' ' -f2 | cut -d'.' -f1)-dot-devshell.appspot.com"
+WEB_URL=$(cloudshell get-web-preview-url --port 8080)
+
+clear 
 
 echo ""
 echo "===================================================="

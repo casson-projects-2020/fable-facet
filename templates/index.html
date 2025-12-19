@@ -102,12 +102,12 @@ async function selectProject()
 }
 
 
-async function install() 
+async function installer_run() 
 {
     elem( "step2" ).style.display = "none";
     elem( "completed" ).style.display = "block";
 
-    const response = await fetch( './install', 
+    const response = await fetch( './installer_run', 
     {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }

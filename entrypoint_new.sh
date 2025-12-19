@@ -1,16 +1,15 @@
 #!/bin/bash
 
-# Instala o Flask se não existir (necessário para o servidor)
+clear
 pip install flask --user -q
 
-# Inicia o servidor em background
-python3 server.py &
+python3 tutorial.py &
 
-# Espera 2 segundos para o servidor subir
 sleep 2
 
-# Gera a URL de preview
 WEB_URL="https://8080-dot-$(cloudshell edit-info | grep 'host' | cut -d' ' -f2 | cut -d'.' -f1)-dot-devshell.appspot.com"
+
+clear
 
 echo ""
 echo "===================================================="

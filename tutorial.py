@@ -47,32 +47,31 @@ def create_project():
     data = request.json
     project_name = data.get( 'name' )
 
-    debug_apague = "";
-
     invalid = True
     attempts = 0
     while invalid:
         invalid = False
 
         project_id = project_name[ : 20 ] + "-" + uuid.uuid4().hex[ :9 ]
-        debug_apague += project_name + " " + project_id + "<br/>"
+        print( project_name + " " + project_id )
 
-        _ = """ check = subprocess.run(
+        check = subprocess.run(
                 [ 'gcloud', 'projects', 'describe', project_id ],
                 capture_output=True, text=True
-        )"""
+        )
 
-        #if check.returncode == 0: # error, project already exists
-        if True:
+        if check.returncode == 0: # error, project already exists
+            print( "project already exists" )
             if attempts > 10:
                 return jsonify({
                     'success': False, 
-                    'debug_apague': debug_apague,
                     'error': "gcloud failed to create the project"
                 }), 500
             else:
                 attempts += 1
             invalid = True
+        else:
+            print( "project id is unique and can be used" )
 
     try:
         #subprocess.run([ 'gcloud', 'projects', 'create', project_id, f'--name={project_name}' ], check=True )

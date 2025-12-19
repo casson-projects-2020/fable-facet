@@ -78,6 +78,8 @@ async function selectProject()
             body: JSON.stringify({ name_id: projs[ projs.selectedIndex ].textContent })
         });
 
+        console.dir( response.json());
+
         const data = await response.json();
 
         if( data.success )

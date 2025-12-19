@@ -7,12 +7,12 @@ PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
 ORG_ID=$(gcloud projects get-ancestors $PROJECT_ID --format='value(id)' | tail -n 1)
 ANCESTOR_TYPE=$(gcloud projects get-ancestors $PROJECT_ID --format='value(type)' | tail -n 1)
 
-if [ "$ANCESTOR_TYPE" != "organization" ]; then
+if [ "$ANCESTOR_TYPE" == "organization" ]; then
     echo "⚠️ This project belongs to an Organization - the installation will abort"
     echo "Fable Facet is licenced only to individual, personal GCP accounts"
     echo "⚠️ Caution: don't remove this - other parts of the code will fail in GCP accounts linked to Organizations"
     echo "------------------------------------------------------------"
-    echo "Press [ENTER] to close this window..."
+    echo "Press [ENTER] on the terminal to close..."
     read -r  
     exit 1
 fi

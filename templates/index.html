@@ -66,6 +66,7 @@ async function createProject()
 async function selectProject() 
 {
     projs = elem( "project_id" );
+    const status = elem( "status" );
 
     step1.style.display = "none";
 
@@ -82,7 +83,6 @@ async function selectProject()
 
         if( data.success )
         {
-            alert();
             status.textContent = "✅ " + data.message;
             elem( "loader" ).style.display = "none";
             elem( "step2" ).style.display = "block";

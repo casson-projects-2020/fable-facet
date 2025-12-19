@@ -91,8 +91,8 @@ def create_project():
         }), 500
 
 
-@app.route('/install', methods=['POST'])
-def install():
+@app.route('/installer_run', methods=['POST'])
+def yfc_installer_run():
     print( "running installer..." )
 
     subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
@@ -105,6 +105,11 @@ def install():
         bufsize=1
     )
 
+    return jsonify(
+    {
+        'success': True, 
+        'message': f"Installer running"
+    }), 200
 
 if __name__ == '__main__':
     app.run( host = '0.0.0.0', port=8080 )

@@ -23,7 +23,7 @@ provider "google" {
 }
 
 locals {
-  sub           = data.google_client_openid_userinfo.me.sub 
+  sub           = data.google_client_openid_userinfo.me.id 
   sub_hash      = substr( sha256("${local.sub}"), 0, 10 )
   cf_name       = "ffacet-user-${local.sub_hash}"
   central_api   = "https://api.fablefacet.com/register"

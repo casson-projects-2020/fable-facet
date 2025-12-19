@@ -95,7 +95,6 @@ def create_project():
 def install():
     print( "running installer..." )
 
-    subprocess.run([ 'clear' ])
     subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
     subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
     process = subprocess.Popen(

@@ -1,14 +1,13 @@
 import functions_framework
 
-import google.auth.transport.requests
 from google.auth.transport.requests import Request as GoogleRequestTransport
-import google.oauth2.id_token
 import hashlib
 import json
 import os
 import requests
 import secrets
 import time
+
 
 
 _ = """

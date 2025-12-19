@@ -91,7 +91,11 @@ def create_project():
         }), 500
 
 
+@app.route('/install', methods=['POST'])
 def install():
+    subprocess.run([ 'clear' ])
+    subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
+    subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
     process = subprocess.Popen(
         [ './entrypoint.sh' ], 
         stdout = subprocess.PIPE, 
@@ -99,21 +103,6 @@ def install():
         text = True,
         bufsize=1
     )
-
-    for line in iter( process.stdout.readline, "" ):
-        yield f"data: {line}\n\n"
-
-    process.stdout.close()
-    yield "data: [INSTALLATION COMPLETED]\n\n"
-
-
-@app.route('/stream-logs')
-def stream_logs():
-    subprocess.run([ 'clear' ])
-    subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
-
-    # Retorna a resposta com o mimetype especial para streaming
-    return Response( install(), mimetype='text/event-stream' )
 
 
 if __name__ == '__main__':

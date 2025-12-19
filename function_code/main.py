@@ -76,7 +76,7 @@ def main( request ):
         token = auth_header.split(' ')[ 1 ]
 
         try:
-            id_info = token.verify_oauth2_token( token, GoogleRequestTransport(), audience = self_url )
+            id_info = token.verify_oauth2_token( token, GoogleRequestTransport(), self_url )
 
         except Exception as e:
             cloud_log( "user_ff.invalid_reg_jwt", f"Register attempt with invalid authorization" )

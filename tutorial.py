@@ -97,13 +97,7 @@ def yfc_installer_run():
 
     subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
     subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
-    process = subprocess.Popen(
-        [ './entrypoint.sh' ], 
-        stdout = subprocess.PIPE, 
-        stderr = subprocess.STDOUT, 
-        text = True,
-        bufsize=1
-    )
+    subprocess.run([ './entrypoint.sh' ])
 
     return jsonify(
     {

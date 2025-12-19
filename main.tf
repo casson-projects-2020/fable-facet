@@ -2,6 +2,13 @@ terraform {
   required_version = ">= 1.0"
   backend "gcs" {
   }
+
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 5.0" # Força o uso da versão 5.x
+    }
+  }
 }
 
 variable "project_id"   {}

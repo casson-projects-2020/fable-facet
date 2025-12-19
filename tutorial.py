@@ -26,7 +26,7 @@ def set_project():
 
     data = request.json
     project_name_id = data.get( 'name_id' ).split( "(" )
-    project_id = project_name_id[ 1 ].replace( ")", "" ).trim()
+    project_id = project_name_id[ 1 ].replace( ")", "" ).strip()
 
     try:
         subprocess.run([ 'gcloud', 'config', 'set', 'project', project_id ])

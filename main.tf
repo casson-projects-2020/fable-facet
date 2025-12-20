@@ -124,11 +124,11 @@ resource "null_resource" "registro_com_rollback" {
       
       HTTP_RESPONSE=$(curl -s -w "%%{http_code}" -o response_body.txt \
         -X POST "${self.triggers.cf_url}" \
-        -H "Authorization: Bearer $TOKEN" \
         -H "Content-Type: application/x-www-form-urlencoded" \
         -d "task=register" \
         -d "self=${self.triggers.cf_url}" \
-        -d "user=${self.triggers.email}" )
+        -d "user=${self.triggers.email}" \
+        -d "token=$TOKEN" )
 
       if [ "$HTTP_RESPONSE" != "200" ]; then
         echo "----------------------------------------------------------"

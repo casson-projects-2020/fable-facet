@@ -60,7 +60,10 @@ echo
 echo "If you delete the cloud function by accident, you may also need to use 'delete my account' to recreate it"
 echo "Read more on Tech section, 'I deleted the cloud function by accident', on Fable Facet site"
 echo
+echo "You can close the browser tab and return to Fable Facet site"
 echo
+echo
+
 
 
 

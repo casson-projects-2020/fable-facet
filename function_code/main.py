@@ -1,13 +1,14 @@
 import functions_framework
 
+
 from google.auth.transport.requests import Request as GoogleRequestTransport
+from google.oauth2 import id_token
 import hashlib
 import json
 import os
 import requests
 import secrets
 import time
-
 
 
 _ = """
@@ -50,36 +51,27 @@ def main( request ):
         try:
             self_url = request.form.get( 'self' )
             user = request.form.get( 'user' )
-            forw_auth = request.form.get( 'forw_auth' )
+            auth_header = request.form.get( 'token' )
 
             if self_url is None:
-                raise Exception( "task is null" )
+                raise Exception( "self is null" )
 
             if user is None:
                 raise Exception( "user is null" )
-            
-            if forw_auth is None:
-                raise Exception( "user auth is null" )
+
+            if auth_header is None:
+                raise Exception( "token is null" )
 
         except Exception as e:
-            cloud_log( "user_ff.no_data", f"API called without informing data {e}" )
+            cloud_log( "user_ff.no_data", f"API called without informing data: {e}" )
             return ( f'<output>no data - {tstamp}</output>', 200, response_headers )
 
-        # call will fail if it is register but no Authorizaton header is sent
-        auth_header = request.headers.get( "Authorization" )
-
-        if auth_header is None:
-            cloud_log( "user_ff.no_auth", f"Register attempt without authorization header" )
-            return ( f'<output>Not authorized</output>', 401, response_headers )
-
-        # ...fails if it is not valid (signed by Google)
-        token = auth_header.split(' ')[ 1 ]
-
+        # call will fail if it is not valid (signed by Google)
         try:
-            id_info = token.verify_oauth2_token( token, GoogleRequestTransport(), self_url )
+            id_info = id_token.verify_oauth2_token( auth_header, GoogleRequestTransport())
 
         except Exception as e:
-            cloud_log( "user_ff.invalid_reg_jwt", f"Register attempt with invalid authorization" )
+            cloud_log( "user_ff.invalid_reg_jwt", f"Register attempt with invalid authorization {e}" )
             return ( f'<output>Not authorized</output>', 401, response_headers )
 
         # ... fails if the token email is not in the one provided
@@ -95,19 +87,25 @@ def main( request ):
         sha256_hash = hashlib.sha256( sub_str.encode( 'utf-8' )).hexdigest()
         sha256_hash = sha256_hash[ :10 ]
 
-        if self_url[ : 22 ] != f"ffacet-user-{sha256_hash}":
-            cloud_log( "user_ff.invalid_sub", f"Register attempt with invalid user (sub)" )
-            return ( f'<output>Not authorized</output>', 401, response_headers )
+        if self_url.startswith( f"https://ffacet-user-{sha256_hash}" ) == False:
+            # Google has two different naming schemes for CFs, detect...
+            if self_url.rstrip( "/" ).endswith( f"ffacet-user-{sha256_hash}" ) == False :
+                cloud_log( "user_ff.invalid_sub", f"Register attempt with invalid user (sub)" )
+                return ( f'<output>Not authorized</output>', 401, response_headers )
 
         # ... fails if this function name is not the one provided
         service_name = os.environ.get( 'K_SERVICE', 'localhost' )
-        if self_url.replace( "https://", "" )[ : len( service_name )] != service_name:
-            cloud_log( "user_ff.invalid_url", f"Register attempt with invalid function url" )
-            return ( f'<output>Unprocessable Entity</output>', 422, response_headers )
+        clean_url = self_url.replace( "https://", "" ).rstrip( "/" )
+
+        if clean_url.startswith( service_name ) == False:
+            # Google has two different naming schemes for CFs, detect...
+            if clean_url.split( '/' )[-1] != service_name:
+                cloud_log( "user_ff.invalid_url", f"Register attempt with invalid function url" )
+                return ( f'<output>Unprocessable Entity</output>', 422, response_headers )
 
         # if we get to this point, call central API and try to register this CF
-
-        headers = { "Authorization": f"Bearer {forw_auth}" }
+            # forwarding the JWT
+        headers = { "Authorization": f"Bearer {token}" }
         payload = {
             "task": "register",
             "addr": self_url,

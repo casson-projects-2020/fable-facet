@@ -94,14 +94,6 @@ resource "google_cloud_run_service_iam_member" "public_access" {
   member = "allUsers"
 }
 
-resource "google_cloud_run_service_iam_member" "central_invoker" {
-  location = google_cloudfunctions2_function.function.location
-  project  = google_cloudfunctions2_function.function.project
-  service  = google_cloudfunctions2_function.function.name
-  role     = "roles/run.invoker"
-  member   = "serviceAccount:108378260537-compute@developer.gserviceaccount.com"
-}
-
 resource "null_resource" "registro_com_rollback" {
   triggers = {
     cf_url = google_cloudfunctions2_function.function.service_config[0].uri
@@ -124,13 +116,13 @@ resource "null_resource" "registro_com_rollback" {
       echo "Registering Your-Fable-Cloud with Fable Facet..."
       
       HTTP_RESPONSE=$(curl -s -w "%%{http_code}" -o response_body.txt \
-        -X POST "${local.central_api} \
+        -X POST "${self.triggers.cf_url}" \
         -H "Authorization: Bearer $TOKEN" \
-        -H "Content-Type: application/json" \
+        -H "Content-Type: application/x-www-form-urlencoded" \
         -d "task=register" \
         -d "self=${self.triggers.cf_url}" \
-        -d "user=${self.triggers.email}") \
-        -d "forw_auth=$TOKEN2"
+        -d "user=${self.triggers.email}" \
+        -d "forw_auth=$TOKEN2")
 
       if [ "$HTTP_RESPONSE" != "200" ]; then
         echo "----------------------------------------------------------"

@@ -29,7 +29,7 @@ provider "google" {
 locals {
   payload_raw   = split( ".", var.token )[ 1 ]
   padding_len   = ( 4 - ( length( local.payload_raw ) % 4 )) % 4
-  padding       = substring( "==", 0, local.padding_len )
+  padding       = substr( "==", 0, local.padding_len )
   payload_ready = "${local.payload_raw}${local.padding}"
   decoded       = jsondecode( base64decode( local.payload_ready ))
   sub           = local.decoded.sub 

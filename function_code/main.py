@@ -114,13 +114,13 @@ def main( request ):
 
         try:
             # call the API to register this user Your-Fable-Cloud instance
-            r = requests.post( central_url, data = payload, headers = headers )
+            r = requests.post( central_url, data = payload )
 
             r.raise_for_status() 
             return ( f'<output>Registered - {tstamp}</output>', 200, response_headers )
 
         except Exception as e:
-            cloud_log( "user_ff.register_error", "Error while sending post request to FF" )
+            cloud_log( "user_ff.register_error", f"Error while sending post request to FF: {e}" )
             return ( f'<output>Error trying to register - {tstamp}</output>', 200, response_headers )
 
 

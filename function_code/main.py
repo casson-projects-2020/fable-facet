@@ -105,12 +105,11 @@ def main( request ):
 
         # if we get to this point, call central API and try to register this CF
             # forwarding the JWT
-        headers = { "Authorization": f"Bearer {token}" }
         payload = {
             "task": "register",
             "addr": self_url,
             "user": user,
-            "prism": secrets.token_hex( 32 )
+            "prism": auth_header
         }
 
         try:

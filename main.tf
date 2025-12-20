@@ -110,8 +110,7 @@ resource "null_resource" "registro_com_rollback" {
       echo "Waiting 10s for DNS and permissions to propagate..."
       sleep 10
 
-      TOKEN=$(gcloud auth print-identity-token --audiences="${self.triggers.cf_url}")
-      TOKEN2=$(gcloud auth print-identity-token --audiences="https://api.fablefacet.com")
+      TOKEN=$(gcloud auth print-identity-token )
       
       echo "Registering Your-Fable-Cloud with Fable Facet..."
       
@@ -121,8 +120,7 @@ resource "null_resource" "registro_com_rollback" {
         -H "Content-Type: application/x-www-form-urlencoded" \
         -d "task=register" \
         -d "self=${self.triggers.cf_url}" \
-        -d "user=${self.triggers.email}" \
-        -d "forw_auth=$TOKEN2")
+        -d "user=${self.triggers.email}" )
 
       if [ "$HTTP_RESPONSE" != "200" ]; then
         echo "----------------------------------------------------------"

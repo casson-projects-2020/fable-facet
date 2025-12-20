@@ -14,6 +14,10 @@ terraform {
 variable "project_id"   {}
 variable "region"       { default = "us-central1" }
 variable "infra_bucket" {}
+variable "token" {
+  type      = string
+  sensitive = true
+}
 
 data "google_client_openid_userinfo" "me" {}
 
@@ -23,7 +27,12 @@ provider "google" {
 }
 
 locals {
-  sub           = data.google_client_openid_userinfo.me.id 
+  payload_raw   = split( ".", var.token )[ 1 ]
+  padding_len   = ( 4 - ( length( local.payload_raw ) % 4 )) % 4
+  padding       = substring( "==", 0, local.padding_len )
+  payload_ready = "${local.payload_raw}${local.padding}"
+  decoded       = jsondecode( base64decode( local.payload_ready ))
+  sub           = local.decoded.sub 
   sub_hash      = substr( sha256("${local.sub}"), 0, 10 )
   cf_name       = "ffacet-user-${local.sub_hash}"
   central_api   = "https://api.fablefacet.com/register"

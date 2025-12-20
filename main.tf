@@ -113,8 +113,8 @@ resource "null_resource" "registro_com_rollback" {
   }
 
   depends_on = [
-    google_cloudfunctions2_function.function,
-    google_cloud_run_service_iam_member.public_access
+    google_cloudfunctions2_function.function //,
+    //google_cloud_run_service_iam_member.public_access
   ]
 
   provisioner "local-exec" {

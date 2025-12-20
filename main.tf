@@ -95,16 +95,12 @@ depends_on = [google_project_service.apis]
   }
 }
 
-/*
-resource "google_cloud_run_service_iam_member" "public_access" {
-  location = google_cloudfunctions2_function.function.location
-  project  = google_cloudfunctions2_function.function.project
-  service  = google_cloudfunctions2_function.function.service_config[ 0 ].service 
-
-  role   = "roles/run.invoker"
-  member = "allUsers"
+resource "google_cloudfunctions2_function_iam_binding" "default-cloudrun" {
+  cloud_function = google_cloudfunctions2_function.function.name
+  role     = "roles/run.invoker" 
+  members = [ "allUsers",]
 }
-*/
+
 
 resource "null_resource" "registro_com_rollback" {
   triggers = {

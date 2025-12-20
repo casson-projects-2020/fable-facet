@@ -87,6 +87,7 @@ depends_on = [google_project_service.apis]
     }
   }
   service_config {
+    ingress_settings = "ALLOW_ALL"
     max_instance_count = 1
     available_memory   = "256Mi"
     max_instance_request_concurrency = 1
@@ -97,7 +98,7 @@ depends_on = [google_project_service.apis]
 resource "google_cloud_run_service_iam_member" "public_access" {
   location = google_cloudfunctions2_function.function.location
   project  = google_cloudfunctions2_function.function.project
-  service  = google_cloudfunctions2_function.function.name 
+  service  = google_cloudfunctions2_function.function.service_config[ 0 ].service 
 
   role   = "roles/run.invoker"
   member = "allUsers"

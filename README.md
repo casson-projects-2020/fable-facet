@@ -10,6 +10,8 @@ By installing this backend in your own GCP account, you maintain control over yo
  
 If you landed here from Fable Facet site and wants to install Your-Fable-Cloud, please click the link below and follow the instructions (if you don't have a GCP account yet, you will need to set up one first - please refer to Fable Facet site)
 
+Please read the Terms of Use below and on the website before proceed.
+
 [![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/casson-projects-2020/fable-facet&cloudshell_tutorial=tutorial_entry.md&show=terminal&tutorial_reset=true)
 
 ## :warning: Terms of Use Summary

@@ -18,6 +18,7 @@ Please read the Terms of Use below and on the website before proceed.
 ### Important: This is a brief overview. By installing this software, you agree to the full Terms of Service hosted on our website.
 * **Developer Status** By proceeding with the installation, you agree to be recognized and treated as a **Developer**. You are intentionally deploying and integrating your own infrastructure into our network. If you do not accept this technical responsibility, do not install this software.
 * **Legal Age** You must be 18+ years old to use Gemini API
+* **Geographic Restrictions** Due to provider limitations, the Gemini Free Tier is not supported in the European Economic Area (EEA), Switzerland, or the United Kingdom. While this installer will complete the setup, the central API will not function if your location is within these regions.
 * **Prerequisite** This backend will not work without Fable Facet site
 * **Account Type** We allow only personal/individual GCP accounts. The installer will fail on accounts linked to Organizations
 * **Costs** While designed to stay within the GCP Always Free Tier, you are responsible for monitoring your usage if you have other active projects

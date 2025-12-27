@@ -8,8 +8,8 @@ It is as a tool to aid fictional writing, but it allows for an interactive readi
 
 The system is designed to be inside the always-free tier on GCP, but if you already use the free tier in other projects you will have to manage this aspect.
  
-> :warning: There are restrictions - don't install without visiting the site and reading about it. First, it will not work without Fable Facet site, and second, while this installer is MIT-licensed, other parts of the software are not open-source, and will fail in any GCP account that is linked to Organizations (only personal, individual accounts can be used). Also a lot of
-terms of service applies, including being 18+ years old, not being able to any other uses beyond writing and publishing texts, etc.
+> :warning: There are restrictions - don't install without visiting the site and reading about it. First, it will not work without Fable Facet site, and second, while this installer is MIT-licensed, other parts of the software are not open-source, and will fail in any GCP account that is linked to Organizations (only personal, individual accounts can be used). Also a number
+of terms of service applies, including being 18+ years old, not being able to any other uses beyond writing and publishing texts, etc.
 
 If you landed here from Fable Facet site and wants to install Your-Fable-Cloud, please click the link below and follow the instructions (if you don't have a GCP account yet, you will need to create it first - please refer to Fable Facet site)
 

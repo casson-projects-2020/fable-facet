@@ -1,5 +1,5 @@
 # Fable Facet - Your-Fable-Cloud
-In conjunction with Fable Facet site it creates a distributed, Bring Your Own Infrastructure application that allows human authors to use AI to assist in creating texts.
+In conjunction with Fable Facet site it creates a distributed, Bring Your Own Infrastructure application that allows developers / authors to use AI to assist in creating texts.
 
 This is a "Open In Google Cloud Shell" repo - it will create in your Google Cloud Platform (GCP) account the infrastructure that you will join to the site 
 [Fable Facet](https://fablefacet.com/ffacet.mesis.html) to be used solely by you. 

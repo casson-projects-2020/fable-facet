@@ -142,6 +142,7 @@ async function get_email()
         const response = await fetch( './get_email' );
         email = await response.text();
         email_box.innerHTML += " " + email;
+        alert( email );
     }
     catch( err ) 
     {

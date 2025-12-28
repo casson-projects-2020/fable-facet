@@ -108,6 +108,22 @@ def create_project():
         }), 500
 
 
+@app.route( '/get_email', methods=[ 'GET' ])
+def get_email():
+    try:
+        result = subprocess.run(
+            ["gcloud", "config", "get-value", "account"],
+            capture_output = True,
+            text = True,
+            check = True
+        )
+        return result.stdout.strip()
+    except subprocess.CalledProcessError as e:
+        # Caso o gcloud retorne erro (ex: sem conta configurada)
+        print(f"Erro ao obter conta: {e.stderr}")
+        return "## error, please click restart"
+
+
 @app.route('/installer_run', methods=['POST'])
 def yfc_installer_run():
     print( "running installer..." )

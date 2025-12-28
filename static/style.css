@@ -5,9 +5,6 @@
     /* tamanho do header eh o mesmo para mobile e desktop */
     --header-height: max( 60px, min( 10dvw, 10dvh ));
 
-    /* mesmo tamanho do header no mobile */
-    --footer-height: max( 100px, min( 10dvw, 10dvh ));
-
     /* inicialmente invisivel a side bar. Vai ter tamanhos diferentes em mobile
         e desktop, mas vai ser controlado pelas paginas de nav e header*/
     --sidebar-width: 0px;
@@ -29,14 +26,6 @@
     --_h: 100dvh;
     --screen-height-unitless: tan( atan2( var( --_h ), 1px ));
 }
-@media ( min-width: 769px ) 
-{   /* desktop ou medias com mais de 769px logicos de largura */
-    :root
-    {
-        /* sem footer no desktop */
-        --footer-height: 0px;
-    }
-}
 body
 {   display: grid;
     background-color: var( --theme-darkest );
@@ -46,7 +35,7 @@ body
     height: 100dvh;
     width: 100dvw;
     min-width: 320px;
-    grid-template-rows: var( --header-height ) calc( 100dvh - var( --header-height ) - var( --footer-height ));
+    grid-template-rows: var( --header-height ) calc( 100dvh - var( --header-height ));
     grid-template-areas: 
         "header"
         "main";
@@ -63,7 +52,7 @@ body
 }
 #main_section
 {   grid-area: main;
-    overflow: hidden;
+    overflow: auto;
     width: 100dvw;
     padding: 15px;
 }

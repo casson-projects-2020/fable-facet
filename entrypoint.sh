@@ -20,7 +20,7 @@ fi
 USER_EMAIL=$(gcloud config get-value account)
 
 echo "📧 Detected user: $USER_EMAIL"
-echo "⚠️ Attention: if this email is NOT the same used to login on Fable Facet site, Your-Fable-Cloud will not run"
+echo "⚠️ Attention: if this email is NOT the same used to login on Fable Facet site, Your-Fable-Cloud will not work"
 echo
 echo "security based on Federated Identity: no secrets are exchanged, just Google-signed OIDC tokens to verify ownership."
 echo "Read more on Tech section, 'Security Model', on Fable Facet site" 

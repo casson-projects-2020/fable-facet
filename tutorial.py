@@ -112,7 +112,7 @@ def create_project():
 def yfc_installer_run():
     print( "running installer..." )
 
-    subprocess.run([ 'chmod', '+x', 'entrypoint.sh' ])
+    subprocess.run([ 'chmod', '+x', 'yfc_install.sh' ])
     subprocess.Popen(
         ['./entrypoint.sh'],
         stdout=None, 

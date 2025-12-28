@@ -2,7 +2,7 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="../static/style.css">  
-<title>Your Fable Clour - Authors + AI to fictional texts</title>
+<title>Your Fable Clour - Authors + AI to create fictional texts</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com" class="genos_first ">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" class="genos_sec ">
@@ -105,12 +105,6 @@ async function selectProject()
 }
 
 
-async function api_key_creation() 
-{
-    // https://accounts.google.com/AccountChooser?continue=https://aistudio.google.com/app/apikey&Email=USUARIO@EMAIL.COM
-}
-
-
 async function installer_run() 
 {
     elem( "step2" ).style.display = "none";
@@ -136,19 +130,26 @@ async function installer_run()
 async function get_email() 
 {
     const email_box = elem( "target" );
+    const step2_key = elem( "step2_key" );
 
     try 
     {
         const response = await fetch( './get_email' );
         email = await response.text();
-        email_box.innerHTML += " " + email;
+        email_box.innerHTML += " " + email + `<br/><br/>
+if this is not the same email on Fable Facet, DON'T INSTALL<br/>
+email of GCP account must match the one used in the site`;
+
+        step2_key.onclick = () =>
+        {   window.open( "https://accounts.google.com/AccountChooser" + 
+                "?continue=https://aistudio.google.com/app/apikey&Email=" + email );
+        }
     }
     catch( err ) 
     {
         alert( err );
     }
 }
-
 </script>
 </head>
 <body>
@@ -175,7 +176,7 @@ async function get_email()
             <br/><br/><hr/>
             <h2>OR create a new one</h2>
             <p>If you don't see any projects above or you wish to create a dedicated one, type a 
-                name below and click create.</p>     
+                name below and click create.</p>
             <input type="text" name="new_project" id="new_project" placeholder="Ex: My-Fable-Cloud" 
                 maxlength="30" />
             <br/><br/>
@@ -190,7 +191,8 @@ async function get_email()
                 This integration is intended for professional content creation (of texts) and publishing within the Fable 
                 Facet network.</p>
             <p>Click on the button below to be redirected to Google AI Studio Keys. Click on "Create API Key".</p>
-            <button id="step2_key" style="display: none" onclick="open_ai_studio()">Get your key</button>
+            <button id="step2_key">Create your Google Gemini API key</button>
+
         </div>
         <div id="status" class="status"></div> 
         <div id="loader" style="display: none; text-align: center;">
@@ -202,7 +204,7 @@ async function get_email()
                 width="6" height="22"/><rect class="spinner_hzlK spinner_YF1u" x="17" y="1" width="6" height="22"/>
             </svg>
         </div>
-        <button id="restart" style="display: none" onclick="location.reload()">restart</button>
+        <button id="restart" onclick="location.reload()">restart</button>
         <button id="step3" style="display: none" onclick="installer_run()">Install Fable Cloud</button>
         <div id="completed" style="display: none">
             Installer running... you can close this tab and follow the logs on the Google Cloud Shell terminal.

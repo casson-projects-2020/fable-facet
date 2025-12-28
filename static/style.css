@@ -39,8 +39,8 @@
 }
 body
 {   display: grid;
-    overflow: hidden;
     background-color: var( --theme-darkest );
+    overflow: auto;
     margin: 0;
     padding: 0;
     height: 100dvh;
@@ -152,4 +152,3 @@ input[type='text']
     border-radius: 6px;
     text-align: center;
 }
-

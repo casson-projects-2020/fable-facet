@@ -87,16 +87,28 @@ depends_on = [google_project_service.apis]
 
     environment_variables = {
       GEMINI_KEY = var.api_key
+      email = lower(trimspace(data.google_client_openid_userinfo.me.email))
     }
   }
 }
 
-resource "google_cloudfunctions2_function_iam_binding" "default-cloudrun" {
-  cloud_function = google_cloudfunctions2_function.function.name
-  role     = "roles/run.invoker" 
-  members = [ "allUsers",]
+resource "google_cloud_run_service_iam_binding" "public_access" {
+  location = google_cloudfunctions2_function.function.location
+  service  = google_cloudfunctions2_function.function.name 
+  role     = "roles/run.invoker"
+  members  = [
+    "allUsers",
+  ]
 }
 
+/* // se nao funcionar o acima, testar este
+resource "google_cloud_run_service_iam_member" "public_access" {
+  location = google_cloudfunctions2_function.function.location
+  service  = google_cloudfunctions2_function.function.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+*/
 
 resource "null_resource" "registro_com_rollback" {
   triggers = {

@@ -2,7 +2,7 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="../static/style.css">  
-<title>Your Fable Cloud - Authors + AI to create fictional texts</title>
+<title>Your Fable Cloud - Authors + AI to fictional texts</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com" class="genos_first ">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" class="genos_sec ">
@@ -137,13 +137,49 @@ async function get_email()
         const response = await fetch( './get_email' );
         email = await response.text();
         email_box.innerHTML += " " + email + `<br/><br/>
-if this is not the same email on Fable Facet, DON'T INSTALL<br/>
-email of GCP account must match the one used in the site`;
+If this is not the same email on Fable Facet, DON'T INSTALL.<br/>
+Email of GCP account must match the one used in the site`;
 
         step2_key.onclick = () =>
         {   window.open( "https://accounts.google.com/AccountChooser" + 
-                "?continue=https://aistudio.google.com/app/apikey&Email=" + email );
+                "?continue=https://aistudio.google.com/app/apikey&Email=" + email,'_blank' );
         }
+
+        const input_ = elem( 'gemini_key' );
+
+        input_.addEventListener( 'beforeinput', ( e ) => 
+        {   if( e.inputType == 'insertText' || e.inputType == 'insertCompositionText' )
+                e.preventDefault();
+        });
+
+        input_.addEventListener( 'paste', async ( e ) => 
+        {
+            try 
+            {
+                const response = await fetch( './validate_key', 
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: elem( "gemini_key" ).textContent })
+                });
+                const text = await response.text();
+                if( text == "ok" )
+                {   elem( "step2" ).style.display = 'none';
+                    elem( "step3" ).style.display = 'block';
+                }
+                else
+                {
+                    status.textContent = "❌ Error while validating key: " + data.error;
+                    elem( "gemini_key" ).style.backroundColor = "#FFA0A0";
+                }
+            }
+            catch( err ) 
+            {
+                alert( err );
+                status.textContent = "❌ Error while validating key: " + data.error;
+                elem( "gemini_key" ).style.backroundColor = "#FFA0A0";
+            }
+        });
     }
     catch( err ) 
     {
@@ -183,18 +219,32 @@ email of GCP account must match the one used in the site`;
             <button onclick="createProject()">Create and use new project</button>
         </div>
         <div id="step2" style="display: none" >
-            <h2>Create a personal API Key for Gemini</h2>
+            <h2>Create a API Key for Gemini</h2>
             <p>⚠️ This app is a professional tool for developers.</p> 
-            <p>Using your own Google's Gemini API key is a step reserved for 
+            <p>Using your own Gemini API key is a step reserved for 
                 developers, so you acknowledge that you are operating as a developer under the
                 <a href="https://ai.google.dev/gemini-api/terms" target="_blank">Gemini API Additional Terms of Service</a>. 
                 This integration is intended for professional content creation (of texts) and publishing within the Fable 
-                Facet network.</p>
-            <p>Click on the button below to be redirected to Google AI Studio Keys. Click on "Create API Key".</p>
+                Facet network. You must be 18+ years old.</p>
+            <p>You also declare that the API key used here is yours.</p>
+            <p>Click on the button below to be redirected to Google AI Studio Keys.</p>
+            <h3>Steps on Google AI Studio</h3>
+            <p><b>1 - You have to select the same project you selected / created here.</b></p>
+            <p class="small_tab">(if you don't see it, click on "Import Projects")</p>
+            <p><b>2 - Click on "Create API key"</b></p>
+            <p><b>3 - Give a name to your key, and click "create key"</b></p>
+            <p class="small_tab">(It can be any name Ex: Fable Facet key)</p>
+            <p><b>4 - Click on the button "copy API key"</b></p>
+            <p><b>5 - Paste the API key below</b></p>
+            <p class="small_tab">(This installer runs on your GCP account: your key will never cross this boundary - 
+                it is a secret and will never be shared with Fable Facet or any other. Please analyze the code if
+                you have any doubts about that)</p>
             <button id="step2_key">Create your Google Gemini API key</button>
-
+            <br/><br/>
+            <div class="pseudo-input" id="gemini_key" contenteditable="true" spellcheck="false"></div>
+            <button id="clear_input" 
+                onclick="const o = elem('gemini_key'); o.textContent=''; o.style.backroundColor = 'white'">🗑️</button>
         </div>
-        <div id="status" class="status"></div> 
         <div id="loader" style="display: none; text-align: center;">
             <svg width="60" height="120" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <style>.spinner_hzlK{animation:spinner_vc4H .8s linear infinite;animation-delay:-.8s; fill: black;}
@@ -204,11 +254,14 @@ email of GCP account must match the one used in the site`;
                 width="6" height="22"/><rect class="spinner_hzlK spinner_YF1u" x="17" y="1" width="6" height="22"/>
             </svg>
         </div>
+        <br/>
+        <button id="step3" style="display: none" onclick="installer_run()">All set - Install Fable Cloud</button>
         <button id="restart" onclick="location.reload()">restart</button>
-        <button id="step3" style="display: none" onclick="installer_run()">Install Fable Cloud</button>
         <div id="completed" style="display: none">
-            Installer running... you can close this tab and follow the logs on the Google Cloud Shell terminal.
+            Installer running... you can close this tab (and AI Studio) and follow the logs on the Google Cloud Shell terminal.
         </div>
+        <br/><br/>
+        <div id="status" class="status"></div><br/>
     </div>
     </section>
 </body>

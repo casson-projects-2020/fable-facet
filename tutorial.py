@@ -5,7 +5,7 @@ import sys
 import uuid
 import os
 
-import google.generativeai as genai
+from google import genai
 from google.api_core import exceptions
 
 
@@ -139,25 +139,18 @@ def validate_key():
         return "no key", 400
 
     try:
-        genai.configure( api_key = key )
-        genai.list_models()
+        client = genai.Client( api_key = key )
+        models = client.models.list()
 
         env[ "GEMINI_KEY" ] = key
 
         return "ok", 200
-
-    except exceptions.Unauthenticated:
-        return "Invalid Key (Unauthenticated)", 401
 
     except Exception as e:
-        if "API_KEY_INVALID" in str( e ):
-            return "Invalid key", 401
-
-        env[ "GEMINI_KEY" ] = key
-        return "ok", 200
+        return "Invalid key", 401
 
 
-@app.route('/installer_run', methods=['POST'])
+@app.route( '/installer_run', methods=['POST'])
 def yfc_installer_run():
     print( "running installer..." )
 

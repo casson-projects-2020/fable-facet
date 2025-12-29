@@ -18,6 +18,10 @@ variable "token" {
   type      = string
   sensitive = true
 }
+variable "api_key" {
+  type      = string
+  sensitive = true
+}
 
 data "google_client_openid_userinfo" "me" {}
 
@@ -58,18 +62,6 @@ resource "google_project_service" "apis" {
   disable_on_destroy = false
 }
 
-data "google_project" "target" {
-  project_id = var.project_id
-}
-
-resource "google_project_iam_member" "gemini_user" {
-  project = var.project_id
-  role    = "roles/aiplatform.user"
-  member  = "serviceAccount:${data.google_project.target.number}-compute@developer.gserviceaccount.com"
-  
-  depends_on = [google_project_service.apis]
-}
-
 resource "google_cloudfunctions2_function" "function" {
   name     = local.cf_name
   location = var.region
@@ -92,6 +84,10 @@ depends_on = [google_project_service.apis]
     available_memory   = "256Mi"
     max_instance_request_concurrency = 1
     timeout_seconds = 60
+
+    environment_variables = {
+      GEMINI_KEY = var.api_key
+    }
   }
 }
 
@@ -108,10 +104,7 @@ resource "null_resource" "registro_com_rollback" {
     email  = lower(trimspace(data.google_client_openid_userinfo.me.email))
   }
 
-  depends_on = [
-    google_cloudfunctions2_function.function //,
-    //google_cloud_run_service_iam_member.public_access
-  ]
+  depends_on = [ google_cloudfunctions2_function.function ]
 
   provisioner "local-exec" {
     command = <<EOT

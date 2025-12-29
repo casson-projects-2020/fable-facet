@@ -4,10 +4,14 @@ import json
 import sys
 import uuid
 import os
+import logging
 
 from google import genai
 from google.api_core import exceptions
 
+os.environ[ 'WERKEZUG_RUN_MAIN' ] = 'true' 
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 app = Flask(__name__)
 

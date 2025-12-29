@@ -89,6 +89,12 @@ h2
     margin-top: 0; 
     font-family: Genos, sans-serif;
 }
+h3
+{
+    color: var(--theme-darkest); 
+    margin-top: 0; 
+    font-family: Blinker, sans-serif;
+}
 select 
 { 
     width: 100%; 
@@ -140,4 +146,41 @@ input[type='text']
     color: white;
     border-radius: 6px;
     text-align: center;
+}
+.small_tab
+{
+    font-size: 90%;
+    margin-left: 20px;
+}
+.pseudo-input 
+{
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-height: 20px;
+    width: 88%;
+    border-radius: 4px;
+    font-family: sans-serif;
+    outline: none;
+    background: #fff;
+    display: inline-block;
+}
+.pseudo-input:empty:before 
+{
+    content: "paste here Ex: AIzaSYA...";
+    color: #888;
+}
+.pseudo-input:focus 
+{
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.5);
+}
+#clear_input
+{
+    width: 3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    font-size: 1rem;
+    cursor: pointer;
 }

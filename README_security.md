@@ -131,8 +131,7 @@ or cancellation of service.
 
 ## 3 - The cloud function can be accessed by HTTPS without authentication
 ### So what prevent anyone to use it?
-We use a layer of customized security. In essence, we use an implementation similar to TLS to protect the cloud functions. It is 
-comprised of:
+We use a layer of customized security. In essence, we use an implementation a customized Diffie-Hellman Key Exchange mechanism similar to TLS/HTTPS to protect the cloud functions. It is comprised of:
 #### 1 - Fable Facet site only works if push notifications are allowed
 That uses an Asymmetric Encrypted Out-of-Band Channel to your browser. It is unique to your browser, and encrypted using keys 
 protected by the browser itself - inacessible to JavaScript. Messages are routed through trusted Push Services (Google FCM, Mozilla Autopush, and Microsoft WNS - Windows Push Notification Services), ensuring delivery via a distinct architectural path from the standard web request. While used regularly as a message channel, it also securely transmits key cryptographic information that cannot be intercepted.

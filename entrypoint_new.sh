@@ -12,7 +12,7 @@ clear
 
 python3 tutorial.py &
 
-sleep 2
+sleep 5
 
 WEB_URL=$(cloudshell get-web-preview-url --port 8080)
 

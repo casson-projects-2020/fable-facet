@@ -34,6 +34,10 @@ def main( request ):
         'Content-Type': 'text/html'
     }
 
+    if request.method == 'GET':
+        return land_page(), 200
+
+
     # may be null - register don't use it
     prism = request.form.get( 'prism' )
 
@@ -139,8 +143,144 @@ def cloud_log( tipo_erro, mensagem, user_id = None, warning = None ):
         "severity": "ERROR" if warning is None else "WARNING", 
         "event_type": tipo_erro,
         "message": mensagem,
-        "timestamp_ms": int(time.time() * 1000),
+        "timestamp_ms": int( time.time() * 1000 ),
         "user_id": user_id
     }
 
     print( json.dumps( log_entry ))
+
+
+def land_page():
+    return """
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com" /> 
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Blinker:wght@100;200;300;400;600;700;800;900&amp;display=block" 
+crossorigin="true" />
+<style>
+*
+{   box-sizing: border-box;   }
+:root
+{
+    /* cores do tema */
+    --theme-darkest: rgb( 0, 16, 0 );
+    --theme-dark: rgb( 0, 22, 0 );
+    --theme-dark-op0: rgba( 0, 22, 0, 0 );
+    --theme-medium: rgb( 0, 32, 0 );
+    --theme-light: rgb( 0, 42, 0 );
+    --theme-lighter: rgb( 0, 47, 0 );
+    --theme-lightest: rgb( 0, 122, 0 );
+    --theme-megalight: rgb( 120, 200, 120 );
+    --theme-ultralight: #B0FFB0;
+}
+html
+{
+    scrollbar-color: rgb( 0, 42, 0 );
+    scrollbar-width: thin;
+}
+body
+{   
+    padding: 0px;
+    line-height: 1.5;
+}
+form
+{
+    padding: 12px;
+    background-color: var( --theme-ultralight );
+    border-radius: 8px;
+}
+input[type='text']
+{
+    padding: 8px;
+    width: 95%;
+    margin: 10px;
+}
+label
+{
+    color: var( --theme-darkest );
+    margin-right: 10px;
+    font-family: Blinker, sans-serif;
+}
+button[type='button']
+{
+    padding: 12px;
+    background-color: var( --theme-light );
+    border-radius: 6px;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+form span
+{
+    font-family: Blinker, sans-serif;
+}
+p
+{
+    font-family: Blinker, sans-serif;
+    font-size: 1rem;
+    color: white;
+    font-weight: 300;
+}
+</style>
+<script>
+window.addEventListener( "message", (event) => 
+{
+    if( event.origin != 'https://cliente.fablefacet.com' ) return;
+
+    if( event.data.type == 'content' ) 
+    {   var parser = new DOMParser();
+        var doc = parser.parseFromString( event.data.payload, "text/html" );
+
+        // well-formed markdown (ffacet flavor)
+        var elems = doc.body.children;
+        if( doc.body.children[ 0 ].tagName == "MAIN" )
+            elems = doc.body.children[ 0 ].children;
+
+        Array.from( elems ).forEach( elem_ => document.body.appendChild( elem_ ));
+        document.body.appendChild( document.createElement( "br" ));
+        document.body.appendChild( document.createElement( "br" ));
+
+        // check if there are data to send to the controller
+        var button = document.querySelector( "button[type='button']" );
+        if( button != undefined )
+        {
+            button.addEventListener( "click", (event) =>
+            {   
+                var data = "";
+                document.querySelectorAll( "input" ).forEach( el_ =>
+                {   data += el_.outerHTML.replace( ">", "" ) +
+                        ' value="' + el_.value + '">';
+                });
+                var msg = { type: 'IFRAME_DATA', payload: data };
+                window.parent.postMessage( msg, 'https://cliente.fablefacet.com' );
+            });
+        }
+    }
+    if( event.data.type == 'data_ack' ) 
+    {   var form = document.querySelector( "form" );
+        if( form != undefined ) form.remove();
+    }
+    if( event.data.type == 'font_size' ) 
+    {   const font_size = parseInt( event.data.payload );
+        if( font_size <= 150 && font_size >= 80 )
+        {   if( document.body?.font_style == undefined )
+            {
+                document.body.font_style = document.createElement( "style" );
+                document.body.font_style.textContent = "body p{ font-size: 100%; }";
+                document.head.appendChild( document.body.font_style );
+            }
+            document.body.font_style.textContent = "body p{ font-size: " + font_size + "%; }";
+        }
+    }
+});
+window.parent.postMessage({ type: 'IFRAME_READY' }, 'https://cliente.fablefacet.com' );
+console.log( "enviado o ready" );
+</script>
+</head>
+<body>
+</body>
+</html>
+"""
+

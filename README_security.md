@@ -1,7 +1,7 @@
 # Security Considerations and Related Code Analysis
 This is a tool for developers, so we consider that you can analyse the code in this repo to see that our claims about security are true.
 
-However, to help in this task, here are the main security concerns and the code analysis related to them.
+However, to help in this task, here are the main security concerns and the code analysis and use terms related to them.
 
 ## 1 - Gemini API Key never crosses your GCP account boundary
 We ask you to paste an API key created for Gemini. The interface that you will see when we request that can be found in this repo at /templates/index.html. 

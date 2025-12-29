@@ -1,4 +1,4 @@
-# Security Considerations and Code Analysis
+# Security Considerations and Related Code Analysis
 This is a tool for developers, so we consider that you can analyse the code in this repo to see that our claims about security are true.
 
 However, to help in this task, here are the main security concerns and the code analysis related to them.

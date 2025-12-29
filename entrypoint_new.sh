@@ -8,6 +8,7 @@ fuser -k 8080/tcp > /dev/null 2>&1
 echo "Preparing Python environment..."
 pip install --upgrade pip
 pip install google-generativeai
+clear
 
 python3 tutorial.py &
 

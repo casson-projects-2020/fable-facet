@@ -155,21 +155,21 @@ The outcome depends on when and how the unauthorized call is made:
 In this case, the system will treat it as a new session initialization (there are only two non-encrypted messages possible: start
 session and resume session). However, the Fable Facet API will attempt to send the secret-exchange handshake only to YOUR registered browser via the secure out-of-band channel — not to the attacker's browser.
 
-Since the attacker cannot receive the necessary cryptographic parameters sent via your private Push Service, they cannot complete the handshake. The only response the attacker will receive is an encrypted payload that is impossible to decrypt, as the shared secret required to unlock it was never established with them.
+Since the attacker cannot receive the necessary cryptographic parameters sent via your private Push Service, they cannot complete the handshake. The only response the attacker will receive is an encrypted payload that is impossible to decrypt, as the shared secret required to unlock it was never established with them. Gemini won't be called as this first message is part of a handshake.
 #### 2 - Concurrent Access (You are actively using Fable Facet)
 Almost all non-encrypted and all incorrectly encrypted traffic is dropped by the function logic before any data is processed. It is impossible for the unauthorized caller to have the key, so the only possible unencrypted request in this case is "resume session". 
 This will have exactly the same effect as the item 1 above.
 #### 3 - Protection against Replay Attacks
-In the highly unlikely event that an attacker captures an exact copy of a valid HTTP request before it is fully secured by the HTTPS layer, the system remains protected.
+The system implements state-tracking: once you move to the next interaction, all previous requests are invalidated 
+and discarded immediately if seen again, rendering any intercepted old traffic requests useless for future replay attempts.
 
-There is a small chance an attacker will get, again, an encrypted payload impossible to decrypt. This chance exists because the system account for 
-network packet loss. A replay attack could only potentially trigger a response if the duplicate request is sent between your original request and the function's response. 
+If a replay attack is attempted with the last valid request, your cloud function implements a progressive challenge protocol:
 
-Furthermore, the system implements state-tracking: once you move to the next interaction, all previous request are invalidated 
-and discarded immediately, rendering any intercepted traffic useless for future replay attempts.
+**Validation Window**: We allow a minimal tolerance for duplicate requests to account for network packet loss or retries
 
-Since the attacker cannot trigger a state-advance (your original request already did that, and the replay merely attempts to reach the
-state you've already reached), it will not disrupt your normal use of the site.
+**Active Invalidation**: If the same request is detected more than twice, your Cloud Function automatically invalidates the current session 
+and triggers a new Secret-Exchange Handshake
+
 #### 4 - Protection against Denial of Service (DoS)
 Your Cloud Function includes built-in rate-limiting and DoS mitigation. The system expects requests at human-like intervals; if a flood of hundreds of calls is detected in the queue, the function triggers a protection protocol that ignores the unauthorized traffic and clears the execution queue without processing.
 

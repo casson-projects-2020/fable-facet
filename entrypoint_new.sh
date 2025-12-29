@@ -5,6 +5,10 @@ pip install flask --user -q
 
 fuser -k 8080/tcp > /dev/null 2>&1
 
+echo "Preparing Python environment..."
+pip install --upgrade pip
+pip install flask google-generativeai
+
 python3 tutorial.py &
 
 sleep 2

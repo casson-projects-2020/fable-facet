@@ -129,7 +129,79 @@ Some cases, as for instance moderation to avoid offensive content, is one exampl
 if you remove from your code, will not be seen only by you, can leak into the Fable Facet community, and will cause your suspension 
 or cancellation of service.
 
-## 3 - If you want to delete your account
+## 3 - The cloud function can be accessed by HTTPS without authentication
+### So what prevent anyone to use it?
+We use a layer of customized security. In essence, we use an implementation similar to TLS to protect the cloud functions. It is 
+comprised of:
+#### 1 - Fable Facet site only works if push notifications are allowed
+That uses an Asymmetric Encrypted Out-of-Band Channel to your browser. It is unique to your browser, and encrypted using keys 
+protected by the browser itself - inacessible to JavaScript. Messages are routed through trusted Push Services (Google FCM, Mozilla Autopush, and Microsoft WNS - Windows Push Notification Services), ensuring delivery via a distinct architectural path from the standard web request. While used regularly as a message channel, it also securely transmits key cryptographic information that cannot be intercepted.
+#### 2 - Fable Facet central API associates your email with your Web Push Endpoint using OAuth
+Using Google's OAuth your email is linked to your Web Push Endpoint. The only way to circumvent this is breaking the OAuth protocol itself, or to have your password. Even if a malware gains full control of your local machine it cannot circumvent this without your
+password. The messages cannot be routed to any other browser - only to yours.
+#### 3 - In the first call to Gemini in each session, your cloud function starts a secret-exchange handshake
+Your cloud function sends a public parameter that allows your browser to generate a secret key, not directly to you, but to Fable Facet
+central API. The API then relays a push notification that this is about to happen to your browser, with this public parameter in it 
+- again, encrypted using browser-protected asymmetric encryption, and Out-of-Band.
+#### 4 - Your browser generates the secret key, your function encrypts the data
+Fable Facet code on your browser generates a secret key, and your Cloud Function derives the exact same key without ever transmitting
+it over the network. We implement a Diffie-Hellman Key Exchange mechanism — the same cryptographic principle that forms the basis of
+TLS/HTTPS security. Note that this is an ephemeral, cycling, software-generated key, distinct from the long-term keys used by the Web
+Push service. This ensures that every session is uniquely encrypted and that the shared secret exists only in the volatile memory of 
+your browser and your Cloud Function.
+
+### What will happen if someone tries to call it?
+The outcome depends on when and how the unauthorized call is made:
+#### 1 - System At Rest (You are not actively using Fable Facet)
+In this case, the system will treat it as a new session initialization (there are only two non-encrypted messages possible: start
+session and resume session). However, the Fable Facet API will attempt to send the secret-exchange handshake only to YOUR registered browser via the secure out-of-band channel — not to the attacker's browser.
+
+Since the attacker cannot receive the necessary cryptographic parameters sent via your private Push Service, they cannot complete the handshake. The only response the attacker will receive is an encrypted payload that is impossible to decrypt, as the shared secret required to unlock it was never established with them.
+#### 2 - Concurrent Access (You are actively using Fable Facet)
+Almost all non-encrypted and all incorrectly encrypted traffic is dropped by the function logic before any data is processed. It is impossible for the unauthorized caller to have the key, so the only possible unencrypted request in this case is "resume session". 
+This will have exactly the same effect as the item 1 above.
+#### 3 - Protection against Replay Attacks
+In the highly unlikely event that an attacker captures an exact copy of a valid HTTP request before it is fully secured by the HTTPS layer, the system remains protected.
+
+The attacker will only get, again, an encrypted payload impossible to decrypt. This chance exists because the system account for 
+network packet loss. A replay attack could only potentially trigger a response if the duplicate request is sent between your original request and the function's response. 
+
+Furthermore, the system implements state-tracking: once you move to the next interaction, all previous request are invalidated 
+and discarded immediately, rendering any intercepted traffic useless for future replay attempts.
+
+Since the attacker cannot trigger a state-advance (your original request already did that, and the replay merely attempts to reach the
+state you've already reached), it will not disrupt your normal use of the site.
+#### 4 - Protection against Denial of Service (DoS)
+Your Cloud Function includes built-in rate-limiting and DoS mitigation. The system expects requests at human-like intervals; if a flood of hundreds of calls is detected in the queue, the function triggers a protection protocol that ignores the unauthorized traffic and clears the execution queue without processing.
+
+While a massive DoS attack could temporarily prevent you from using your function (Denial of Service), our "silent-drop" logic ensures that these malicious requests do not consume your Google Cloud execution quota.
+
+Furthermore, the Fable Facet central API employs its own independent enterprise-grade DoS protection and it is unlikely to stop function in the event of a DoS attack.
+#### 5 - Protection against Identity/Endpoint Hijacking
+To circumvent the security layers described above, an attacker might attempt to register your email with their own malicious Web Push Endpoint in our central API. However, our system enforces strict Identity Anchoring: the only way to link an email to a push subscription is through a successful OAuth 2.0 authentication.
+
+This means an attacker cannot hijack your session without first compromising your primary email account credentials. As long as your email remains secure, it is impossible for an unauthorized party to reroute your Cloud Function's communication to another device.
+#### 6 - Protection against malicious installer tampering
+A sophisticated attack vector involves modifying the installer code of this repo to point an attacker's account to another user's Cloud Function. To mitigate this Identity Spoofing attempt, Fable Facet implements a triple-check validation:
+
+1 - Identity-Based Naming: The Cloud Function's endpoint is deterministically linked to the owner's verified email. During installation, the owner's email is injected as a protected environment variable within the function, outside the reach of any external attacker.
+
+2 - Payload Validation: Every encrypted request must include the owner's email. The Cloud Function will immediately reject any payload where the internal email does not match its hardcoded environment variable.
+
+3 - Central API Cross-Check: Fable Facet central API, outside the reach of the attacker, will reject attempts to associate a cloud function
+to a different email. If the attacker never calls Register on the central API, the malicious association will never be performed, but if the
+attacker attempts it, it will fail - and that don't depend on the installer code.
+
+While item 2 is theoretically possible to circumvent: the attacker would have to re-write Fable Facet client code to mimic the way requests are 
+made, and just change the email to your email, item 3 is not. 
+
+Notice that the installer code tampering cannot be used to try to associate your email to a malicious Web Push Endpoint and your cloud 
+function - even if a malicious script attempts to register your email and your Cloud Function, it cannot bind them to a malicious 
+Web Push Endpoint - As detailed in Item 5, the Web Push association is strictly governed by the OAuth protocol.
+
+Maliciously modifying the installer to link your email to your own Cloud Function simply replicates the legitimate installation process. It creates a valid, secure record that offers no leverage to an attacker, as they still lack the OAuth credentials and the browser-protected keys necessary to intercept or decrypt the out-of-band communication.
+
+## 4 - If you want to delete your account
 Since the resources are in your own GCP account, if you want to leave Fable Facet network, you can delete the cloud function and the 
 bucket at anytime. You can also use
 

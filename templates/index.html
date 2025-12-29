@@ -109,6 +109,7 @@ async function installer_run()
 {
     elem( "step2" ).style.display = "none";
     elem( "completed" ).style.display = "block";
+    const status = elem( "status" );
 
     try 
     {
@@ -131,6 +132,7 @@ async function get_email()
 {
     const email_box = elem( "target" );
     const step2_key = elem( "step2_key" );
+    const status = elem( "status" );
 
     try 
     {
@@ -160,7 +162,7 @@ Email of GCP account must match the one used in the site`;
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ key: elem( "gemini_key" ).textContent })
+                    body: JSON.stringify({ key: event.clipboardData.getData( 'text/plain' ) })
                 });
                 const text = await response.text();
                 if( text == "ok" )
@@ -256,6 +258,7 @@ Email of GCP account must match the one used in the site`;
         </div>
         <br/>
         <button id="step3" style="display: none" onclick="installer_run()">All set - Install Fable Cloud</button>
+        <br/><br/>
         <button id="restart" onclick="location.reload()">restart</button>
         <div id="completed" style="display: none">
             Installer running... you can close this tab (and AI Studio) and follow the logs on the Google Cloud Shell terminal.

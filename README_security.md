@@ -11,13 +11,40 @@ same VM Cloud Shell uses. The code for the server can be found in this repo at /
 
 The API key is passed via JavaScript to the Flask server. You can see that on index.html:
 
-<code>
+<pre><code>
                 const response = await fetch( './validate_key', 
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ key: elem( "gemini_key" ).textContent })
                 });
-</code>
+</code></pre>
 
-The python code in tutorial.py will validate the key
+The python code in tutorial.py will validate the key:
+
+<pre><code>
+    try:
+        client = genai.Client( api_key = key )
+        models = client.models.list()
+
+        env[ "GEMINI_KEY" ] = key
+
+        return "ok", 200
+
+    except Exception as e:
+        return "Invalid key", 401
+</code></pre>
+
+Notice that the key, if valid, is set as an environment variable. In this way it can be used by Terraform to create
+a cloud function v2 in your GCP account. Apart from the bucket with Terraform data (and the source code for the function,
+that you can see in this repo in /function_code/main.py), this is the only resource created. You can
+see the API key being used by Terraform in /yfc_install.sh:
+
+<pre><code>
+terraform apply -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="infra_bucket=${BUCKET_NAME}" \
+    -var="token=${TOKEN}" -var="api_key=${GEMINI_KEY}"
+</code></pre>
+
+And finally you can see how Terraform uses the API Key in main.tf:
+
+

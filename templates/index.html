@@ -169,15 +169,15 @@ Email of GCP account must match the one used in the site`;
                 }
                 else
                 {
-                    status.textContent = "❌ Error while validating key: " + data.error;
-                    elem( "gemini_key" ).style.backroundColor = "#FFA0A0";
+                    status.textContent = "❌ Error while validating key: " + text;
+                    elem( "gemini_key" ).style.backgroundColor = "#FFA0A0";
                 }
             }
             catch( err ) 
             {
                 alert( err );
-                status.textContent = "❌ Error while validating key: " + data.error;
-                elem( "gemini_key" ).style.backroundColor = "#FFA0A0";
+                status.textContent = "❌ Error while validating key: " + err;
+                elem( "gemini_key" ).style.backgroundColor = "#FFA0A0";
             }
         });
     }
@@ -243,7 +243,7 @@ Email of GCP account must match the one used in the site`;
             <br/><br/>
             <div class="pseudo-input" id="gemini_key" contenteditable="true" spellcheck="false"></div>
             <button id="clear_input" 
-                onclick="const o = elem('gemini_key'); o.textContent=''; o.style.backroundColor = 'white'">🗑️</button>
+                onclick="const o = elem('gemini_key'); o.textContent=''; o.style.backgroundColor = 'white'">🗑️</button>
         </div>
         <div id="loader" style="display: none; text-align: center;">
             <svg width="60" height="120" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

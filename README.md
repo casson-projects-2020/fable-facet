@@ -1,6 +1,8 @@
 # Fable Facet - Your-Fable-Cloud
 Your-Fable-Cloud is the infrastructure component of Fable Facet. It enables a "Bring Your Own Infrastructure" (BYOI) model, allowing developers / authors to use AI-assisted writing tools hosted on their own Google Cloud environment.
 
+Disclaimer: we are not affiliated with Google in any way nor Google has endorsed the site in any way other than approve the OAuth use.
+
 This is a "Open In Google Cloud Shell" repo - it will create in your Google Cloud Platform (GCP) account the infrastructure that you will join to the site 
 [Fable Facet](https://fablefacet.com/ffacet.mesis.html) to be used solely by you. 
 

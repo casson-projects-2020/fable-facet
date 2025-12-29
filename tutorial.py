@@ -3,6 +3,10 @@ import subprocess
 import json
 import sys
 import uuid
+import os
+
+import google.generativeai as genai
+from google.api_core import exceptions
 
 
 app = Flask(__name__)
@@ -124,16 +128,46 @@ def get_email():
         return "## error, please click restart"
 
 
+env = os.environ.copy()
+
+@app.route('/validate_key', methods=['POST'])
+def validate_key():
+    data = request.json
+    key = data.get( 'key' )
+
+    if not key:
+        return "no key", 400
+
+    try:
+        genai.configure( api_key = key )
+        genai.list_models()
+
+        env[ "GEMINI_KEY" ] = key
+
+        return "ok", 200
+
+    except exceptions.Unauthenticated:
+        return "Invalid Key (Unauthenticated)", 401
+
+    except Exception as e:
+        if "API_KEY_INVALID" in str( e ):
+            return "Invalid key", 401
+
+        env[ "GEMINI_KEY" ] = key
+        return "ok", 200
+
+
 @app.route('/installer_run', methods=['POST'])
 def yfc_installer_run():
     print( "running installer..." )
 
     subprocess.run([ 'chmod', '+x', 'yfc_install.sh' ])
     subprocess.Popen(
-        ['./entrypoint.sh'],
-        stdout=None, 
-        stderr=None,
-        bufsize=1
+        ['./yfc_install.sh'],
+        env = env,
+        stdout = None, 
+        stderr = None,
+        bufsize = 1
     )
 
     return jsonify(

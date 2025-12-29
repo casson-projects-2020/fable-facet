@@ -141,8 +141,7 @@ Using Google's OAuth your email is linked to your Web Push Endpoint. The only wa
 password. The messages cannot be routed to any other browser - only to yours.
 #### 3 - In the first call to Gemini in each session, your cloud function starts a secret-exchange handshake
 Your cloud function sends a public parameter that allows your browser to generate a secret key, not directly to you, but to Fable Facet
-central API. The API then relays a push notification that this is about to happen to your browser, with this public parameter in it 
-- again, encrypted using browser-protected asymmetric encryption, and Out-of-Band.
+central API. The API then relays a push notification that this is about to happen to your browser, with this public parameter in it -  again, encrypted using browser-protected asymmetric encryption, and Out-of-Band.
 #### 4 - Your browser generates the secret key, your function encrypts the data
 Fable Facet code on your browser generates a secret key, and your Cloud Function derives the exact same key without ever transmitting
 it over the network. We implement a Diffie-Hellman Key Exchange mechanism — the same cryptographic principle that forms the basis of
@@ -163,7 +162,7 @@ This will have exactly the same effect as the item 1 above.
 #### 3 - Protection against Replay Attacks
 In the highly unlikely event that an attacker captures an exact copy of a valid HTTP request before it is fully secured by the HTTPS layer, the system remains protected.
 
-The attacker will only get, again, an encrypted payload impossible to decrypt. This chance exists because the system account for 
+There is a small chance an attacker will get, again, an encrypted payload impossible to decrypt. This chance exists because the system account for 
 network packet loss. A replay attack could only potentially trigger a response if the duplicate request is sent between your original request and the function's response. 
 
 Furthermore, the system implements state-tracking: once you move to the next interaction, all previous request are invalidated 
@@ -195,7 +194,7 @@ attacker attempts it, it will fail - and that don't depend on the installer code
 While item 2 is theoretically possible to circumvent: the attacker would have to re-write Fable Facet client code to mimic the way requests are 
 made, and just change the email to your email, item 3 is not. 
 
-Notice that the installer code tampering cannot be used to try to associate your email to a malicious Web Push Endpoint and your cloud 
+Notice that installer code tampering cannot be used to try to associate your email to a malicious Web Push Endpoint and your cloud 
 function - even if a malicious script attempts to register your email and your Cloud Function, it cannot bind them to a malicious 
 Web Push Endpoint - As detailed in Item 5, the Web Push association is strictly governed by the OAuth protocol.
 

@@ -46,7 +46,7 @@ locals {
     "cloudfunctions.googleapis.com",
     "cloudbuild.googleapis.com",
     "artifactregistry.googleapis.com",
-    "aiplatform.googleapis.com", # Esta é a API da Vertex AI / Gemini
+    "generativelanguage.googleapis.com"
   ]
 }
 

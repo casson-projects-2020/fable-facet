@@ -141,7 +141,7 @@ password. The messages cannot be routed to any other browser - only to yours.
 #### 3 - In the first call to Gemini in each session, your cloud function starts a secret-exchange handshake
 Your cloud function sends a public parameter that allows your browser to generate a secret key, not directly to you, but to Fable Facet
 central API. The API then relays a push notification that this is about to happen to your browser, with this public parameter in it -  again, encrypted using browser-protected asymmetric encryption, and Out-of-Band.
-#### 4 - Your browser generates the secret key, your function encrypts the data
+#### 4 - Fable Facet local code generates the secret key, your function encrypts the data
 Fable Facet code on your browser generates a secret key, and your Cloud Function derives the exact same key without ever transmitting
 it over the network. We implement a Diffie-Hellman Key Exchange mechanism — the same cryptographic principle that forms the basis of
 TLS/HTTPS security. Note that this is an ephemeral, cycling, software-generated key, distinct from the long-term keys used by the Web

@@ -67,7 +67,7 @@ You will find no other uses for the API key (except inside the Cloud Function), 
 
 For security compliance, Fable Facet requires the use of Personal GCP Projects. Using a GCP account linked to a corporate Organization,
 or shared with others, is prohibited, as users with elevated permissions (such as Organization Admins) could potentially extract the API
-Key from your environment variables, violating the private nature of the key - and that may configure a Google's Terms of Use violation.
+Key from your environment variables, violating the private nature of the key - and that may configure a Google's Terms of Use violation. Sensitive values are also saved on Terraform state data on the installation bucket.
 
 ## 2 - While they cannot be for personal or consumer use, your GCP resources are never shared
 Google's policies for Gemini API keys prohibits personal or consumer use - you as a developer have to use them to create a software. 
@@ -201,18 +201,34 @@ Maliciously modifying the installer to link your email to your own Cloud Functio
 
 ## 4 - If you want to delete your account
 Since the resources are in your own GCP account, if you want to leave Fable Facet network, you can delete the cloud function and the 
-bucket at anytime. For a complete rollback you can also use on the console:
+bucket at anytime. For a complete rollback (in this case, don't delete the bucket because Terraform needs the data saved there to remove
+the resources) you can also use on Google Cloud Shell (you have to associate the console with the correct project):
 
 <pre><code>
-BUCKET=[project]-fable-data
+PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
+BUCKET_NAME="${PROJECT_ID}-fable-data"
+TOKEN=$(gcloud auth print-identity-token)
 curl -O https://raw.githubusercontent.com/casson-projects-2020/fable-facet/refs/heads/main/main.tf
-terraform init -reconfigure -backend-config="bucket=${BUCKET_NAME}" -backend-config="prefix=terraform/state"
-terraform destroy
+terraform init -reconfigure \
+  -backend-config="bucket=${BUCKET_NAME}" \
+  -backend-config="prefix=terraform/state"
+terraform destroy \
+  -auto-approve \
+  -var="api_key=AIzaSy_dummy" \
+  -var="project_id=${PROJECT_ID}" \
+  -var="infra_bucket=${BUCKET_NAME}" \
+  -var="token=${TOKEN}"
+# delete the bucket after cloud function removal
+gcloud storage rm -r "gs://${BUCKET_NAME}"
 </code></pre>
 
-In this case, don't delete the bucket because Terraform needs the data saved there to remove the resources. You
-should declare the variable BUCKET_NAME with the name used to store terraform data. Replace [project] with 
-the name of the project you used - you can find this bucket name in the web console for GCP in Cloud Storage => buckets)
+This code is also in this repo, in /rollback.sh, you can use, instead of the above code (also in the Google Cloud Shell connected
+in the correct project):
+
+<pre><code>
+curl -O https://raw.githubusercontent.com/casson-projects-2020/fable-facet/refs/heads/main/rollback.sh
+chmod +x rollback.sh && ./rollback.sh
+</code></pre>
 
 There is also a "Delete my Account" option on Fable Facet site that removes any data collected from you from our database.
 

@@ -92,14 +92,6 @@ depends_on = [google_project_service.apis]
   }
 }
 
-resource "google_cloud_run_service_iam_member" "invoker_binding" {
-  project  = google_cloudfunctions2_function.function.project
-  location = google_cloudfunctions2_function.function.location
-  service  = google_cloudfunctions2_function.function.service_config[0].service
-  role     = "roles/run.invoker"
-  member   = "allUsers"
-}
-
 resource "null_resource" "registro_com_rollback" {
   triggers = {
     cf_url = google_cloudfunctions2_function.function.service_config[0].uri
@@ -112,6 +104,11 @@ resource "null_resource" "registro_com_rollback" {
     command = <<EOT
       echo "Waiting 10s for DNS and permissions to propagate..."
       sleep 10
+
+      gcloud run services update ${local.cf_name} \
+      --no-invoker-iam-check \
+      --region=${var.region} \
+      --quiet
 
       TOKEN=$(gcloud auth print-identity-token)
       

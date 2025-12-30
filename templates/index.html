@@ -108,8 +108,12 @@ async function selectProject()
 async function installer_run() 
 {
     elem( "step2" ).style.display = "none";
-    elem( "completed" ).style.display = "block";
+    elem( "target" ).textContent = `Installer running... you can close this tab (and AI Studio) 
+        and follow the logs on the Google Cloud Shell terminal`;
     const status = elem( "status" );
+    const restart = elem( "restart" );
+    restart.style.display = "none";
+    status.style.display = "none";
 
     try 
     {
@@ -123,8 +127,11 @@ async function installer_run()
     catch( err ) 
     {
         alert( err );
+
+        restart.style.display = "block";
+        status.style.display = "block";
+
         status.textContent = "❌ Error: please click 'restart': " + data.error;
-        elem( "restart" ).style.display = "block";
     }
 }
 
@@ -260,9 +267,6 @@ Email of GCP account must match the one used in the site`;
         <button id="step3" style="display: none" onclick="installer_run()">All set - Install Fable Cloud</button>
         <br/><br/>
         <button id="restart" onclick="location.reload()">restart</button>
-        <div id="completed" style="display: none">
-            Installer running... you can close this tab (and AI Studio) and follow the logs on the Google Cloud Shell terminal.
-        </div>
         <br/><br/>
         <div id="status" class="status"></div><br/>
     </div>

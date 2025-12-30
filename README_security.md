@@ -201,16 +201,18 @@ Maliciously modifying the installer to link your email to your own Cloud Functio
 
 ## 4 - If you want to delete your account
 Since the resources are in your own GCP account, if you want to leave Fable Facet network, you can delete the cloud function and the 
-bucket at anytime. You can also use
+bucket at anytime. For a complete rollback you can also use on the console:
 
 <pre><code>
+BUCKET=[project]-fable-data
+curl -O https://raw.githubusercontent.com/casson-projects-2020/fable-facet/refs/heads/main/main.tf
 terraform init -reconfigure -backend-config="bucket=${BUCKET_NAME}" -backend-config="prefix=terraform/state"
 terraform destroy
 </code></pre>
 
-On the console. In this case, don't delete the bucket because Terraform needs the data saved there to remove the resources. You
-should declare the variable BUCKET_NAME or use the name directly -backend-config="bucket=project-fable-data" (replace project with 
-the project name you used - you can find this bucket name in the web console for GCP in Cloud Storage => buckets)
+In this case, don't delete the bucket because Terraform needs the data saved there to remove the resources. You
+should declare the variable BUCKET_NAME with the name used to store terraform data. Replace [project] with 
+the name of the project you used - you can find this bucket name in the web console for GCP in Cloud Storage => buckets)
 
 There is also a "Delete my Account" option on Fable Facet site that removes any data collected from you from our database.
 

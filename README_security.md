@@ -134,7 +134,7 @@ or cancellation of service.
 We use a layer of customized security. In essence, we use an implementation a customized Diffie-Hellman Key Exchange mechanism similar to TLS/HTTPS to protect the cloud functions. It is comprised of:
 #### 1 - Fable Facet site only works if push notifications are allowed
 That uses an Asymmetric Encrypted Out-of-Band Channel to your browser. It is unique to your browser, and encrypted using keys 
-protected by the browser itself - inacessible to JavaScript. Messages are routed through trusted Push Services (Google FCM, Mozilla Autopush, and Microsoft WNS - Windows Push Notification Services), ensuring delivery via a distinct architectural path from the standard web request. While used regularly as a message channel, it also securely transmits key cryptographic information that cannot be intercepted.
+protected by the browser itself - inacessible to JavaScript. Messages are routed through trusted Push Services (Google FCM, Mozilla Autopush, and Microsoft WNS - Windows Push Notification Services), ensuring delivery via a distinct architectural path from the standard web request. While used righfully as a message channel, it also securely transmits alongside with the messages key cryptographic information that cannot be intercepted.
 #### 2 - Fable Facet central API associates your email with your Web Push Endpoint using OAuth
 Using Google's OAuth your email is linked to your Web Push Endpoint. The only way to circumvent this is breaking the OAuth protocol itself, or to have your password. Even if a malware gains full control of your local machine it cannot circumvent this without your
 password. The messages cannot be routed to any other browser - only to yours.

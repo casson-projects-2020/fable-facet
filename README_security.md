@@ -204,10 +204,13 @@ Since the resources are in your own GCP account, if you want to leave Fable Face
 bucket at anytime. You can also use
 
 <pre><code>
+terraform init -reconfigure -backend-config="bucket=${BUCKET_NAME}" -backend-config="prefix=terraform/state"
 terraform destroy
 </code></pre>
 
-On the console (in this case, don't delete the bucket because Terraform needs the data saved there to remove the resources)
+On the console. In this case, don't delete the bucket because Terraform needs the data saved there to remove the resources. You
+should declare the variable BUCKET_NAME or use the name directly -backend-config="bucket=project-fable-data" (replace project with 
+the project name you used - you can find this bucket name in the web console for GCP in Cloud Storage => buckets)
 
 There is also a "Delete my Account" option on Fable Facet site that removes any data collected from you from our database.
 

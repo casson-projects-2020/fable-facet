@@ -222,8 +222,8 @@ terraform destroy \
 gcloud storage rm -r "gs://${BUCKET_NAME}"
 </code></pre>
 
-This code is also in this repo, in /rollback.sh, you can use, instead of the above code (also in the Google Cloud Shell connected
-in the correct project):
+This code is also in this repo, in /rollback.sh, so you can use, instead of the above code (also in the Google Cloud Shell connected
+to the correct project):
 
 <pre><code>
 curl -O https://raw.githubusercontent.com/casson-projects-2020/fable-facet/refs/heads/main/rollback.sh

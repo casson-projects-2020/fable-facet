@@ -92,19 +92,10 @@ depends_on = [google_project_service.apis]
   }
 }
 
-/* resource "google_cloud_run_service_iam_binding" "public_access" {
-  location = google_cloudfunctions2_function.function.location
-  service  = google_cloudfunctions2_function.function.name 
-  role     = "roles/run.invoker"
-  members  = [
-    "allUsers",
-  ]
-}
-*/
-
-resource "google_cloud_run_service_iam_member" "public_access" {
-  location = google_cloudfunctions2_function.function.location
-  service  = google_cloudfunctions2_function.function.name
+resource "google_cloud_run_service_iam_member" "invoker_binding" {
+  project  = google_cloudfunctions2_function.function_v2.project
+  location = google_cloudfunctions2_function.function_v2.location
+  service  = google_cloudfunctions2_function.function_v2.service_config[0].service
   role     = "roles/run.invoker"
   member   = "allUsers"
 }

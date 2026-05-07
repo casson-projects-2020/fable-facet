@@ -15,7 +15,7 @@ If you landed here from Fable Facet site and wants to install Your-Fable-Cloud, 
 
 Please read the Terms of Use below and on the website before proceed. Also make sure the email registered in the site is the same that is the owner of the GCP account.
 
-[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/casson-projects-2020/fable-facet&cloudshell_tutorial=tutorial_entry.md&show=terminal&tutorial_reset=true)
+[![Open in Cloud Shell](https://accounts.google.com/AccountChooser?continue=https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/casson-projects-2020/fable-facet&cloudshell_tutorial=tutorial_entry.md&show=terminal&tutorial_reset=true)
 
 ## :warning: Terms of Use Summary
 ### Important: This is a brief overview. By installing this software, you agree to the full Terms of Service hosted on our website.

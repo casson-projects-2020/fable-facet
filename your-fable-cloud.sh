@@ -16,11 +16,11 @@ sudo apt install dialog
 
     perl -e 'ioctl(STDIN, 0x5412, $_) for split //, "\n"'
 
-) | dialog --programbox "Initializing, please wait..." 20 80 && clear
+) | dialog --programbox "Initializing, please wait..." 20 80 >/dev/tty && clear
 
 
 WEB_URL=$(cloudshell get-web-preview-url --port 8080)
 
 timeout 30s dialog --cr-wrap --programbox "App running.\n\n\
 Click on the link to open it:\n\n\
-$WEB_URL" 10 100 || clear
+$WEB_URL" 10 100 >/dev/tty || clear

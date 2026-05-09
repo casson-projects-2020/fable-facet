@@ -5,9 +5,8 @@ Copy this code to the terminal and type ENTER to start. You can copy and paste, 
 This will show "Click on the link below...". When you click on the link, the installer should open in another browser tab.
 
 ```bash
+# { "execute": "true" }
 chmod +x entrypoint_new.sh && ./entrypoint_new.sh
 ```
 
-<walkthrough-editor-select-line filePath="entrypoint_new.sh" lineNumber="1">Click here
-</walkthrough-editor-select-line>
 

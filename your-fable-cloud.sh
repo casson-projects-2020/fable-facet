@@ -10,7 +10,7 @@ sudo apt install dialog
     pip install --upgrade pip
     pip install google-genai
 
-    if pgrep -f "yfc_server.py" > /dev/null; then
+    if pgrep -f "[y]fc_server.py" > /dev/null; then
         echo "server already running"
     else
         python3 yfc_server.py > /dev/null 2>&1 &

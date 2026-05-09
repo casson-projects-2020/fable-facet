@@ -1,29 +1,26 @@
 #!/bin/bash
 
-clear
-pip install flask --user -q
+sudo apt install dialog
 
-fuser -k 8080/tcp > /dev/null 2>&1
+(
+    pip install flask --user -q
 
-echo "Preparing Python environment..."
-pip install --upgrade pip
-pip install google-genai
-clear
+    fuser -k 8080/tcp > /dev/null 2>&1
 
-python3 tutorial.py &
+    pip install --upgrade pip
+    pip install google-genai
 
-sleep 5
+    python3 tutorial.py > /dev/null 2>&1 &
+
+    sleep 5
+
+    perl -e 'ioctl(STDIN, 0x5412, $_) for split //, "\n"'
+
+) | dialog --programbox "Initializing, please wait..." 20 80 && clear
+
 
 WEB_URL=$(cloudshell get-web-preview-url --port 8080)
 
-clear 
-
-echo ""
-echo "===================================================="
-echo "  FABLE FACET WIZARD READY "
-echo
-echo "  Click on the link below to see the wizard"
-echo
-echo "  $WEB_URL"
-echo "===================================================="
-echo ""
+timeout 30s dialog --cr-wrap --programbox "App running.\n\n\
+Click on the link to open it:\n\n\
+$WEB_URL" 10 100 || clear

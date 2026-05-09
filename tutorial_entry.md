@@ -8,7 +8,6 @@ This will show "Click on the link below...". When you click on the link, the ins
 chmod +x entrypoint_new.sh && ./entrypoint_new.sh
 ```
 
-<walkthrough-editor-select-line filePath="entrypoint_new.sh" lineNumber="1">
+<walkthrough-editor-select-line filePath="entrypoint_new.sh" lineNumber="1">Click here
 </walkthrough-editor-select-line>
-<walkthrough-project-setup>
-</walkthrough-project-setup>
+

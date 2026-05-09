@@ -1,7 +1,7 @@
 # Installing Your-Fable-Cloud
 
 
-<span>On the box below, click this icon:</span>![icon](./static/cshell_btn.PNG)<br/></div>
+<span>On the box below, click this icon:</span>![icon]([./static/cshell_btn.PNG](https://cdn.jsdelivr.net/gh/casson-projects-2020/fable-facet@main/static/cshell_btn.PNG)<br/></div>
 
 ```sh
 bash your-fable-cloud.sh

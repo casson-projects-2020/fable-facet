@@ -44,8 +44,7 @@ echo "🛠️ Initing Terraform..."
 TOKEN=$(gcloud auth print-identity-token)
 terraform init -reconfigure -backend-config="bucket=${BUCKET_NAME}" -backend-config="prefix=terraform/state"
 
-terraform apply -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="infra_bucket=${BUCKET_NAME}" \
-    -var="token=${TOKEN}" -var="api_key=${GEMINI_KEY}"
+terraform apply -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"
 
 echo "✅ All done - Your-Fable-Cloud is installed. Get back to Fable Facet site to use it"
 echo

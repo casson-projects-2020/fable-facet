@@ -118,6 +118,51 @@ def create_project():
 
 @app.route( '/get_email', methods=[ 'GET' ])
 def get_email():
+    # check if the account is not tied to an organization
+
+    project = ""
+
+    try:
+        result = subprocess.run(
+            ["gcloud", "config", "get-value", "project" ],
+            capture_output = True,
+            text = True,
+            check = True
+        )
+        project = result.stdout.strip()
+
+    except subprocess.CalledProcessError as e:
+        # Caso o gcloud retorne erro (ex: sem conta configurada)
+        print( f"Cannot run gcloud config get-value project: {e.stderr}")
+        return "## error, please click restart"
+
+    try:
+        result = subprocess.run(
+            ["gcloud", "projects", "get-ancestors", project ],
+            capture_output = True,
+            text = True,
+            check = True
+        )
+        ancestors = result.stdout
+
+    except subprocess.CalledProcessError as e:
+        print( f"Cannot run gcloud projects get-ancestors {project}: {e.stderr}")
+        return "## error, please click restart"
+
+    # This license restriction is a security measure to ensure that secrets 
+    # (such as your Gemini API keys) remain private. Privacy cannot be guaranteed 
+    # if the account is managed by a third-party organization. 
+    # Additionally, managing the Free Tier is complex; the presence of other 
+    # organization-level resources could lead to unexpected Google Cloud charges. 
+    # Bypassing this restriction makes the user solely responsible for any 
+    # consequences, as per the Fable Facet Terms of Service on our website.
+    if "organization" in ancestors:
+        print( f"account is not personal {ancestors}")
+        err_ = "## This GCP account is part of an organization. Fable Facet's"
+        err_ += "license only allows personal accounts"
+
+        return err_
+    
     try:
         result = subprocess.run(
             ["gcloud", "config", "get-value", "account"],
@@ -126,9 +171,10 @@ def get_email():
             check = True
         )
         return result.stdout.strip()
+
     except subprocess.CalledProcessError as e:
         # Caso o gcloud retorne erro (ex: sem conta configurada)
-        print(f"Erro ao obter conta: {e.stderr}")
+        print(f"Cannot run gcloud config get-value account: {e.stderr}")
         return "## error, please click restart"
 
 
@@ -154,13 +200,13 @@ def validate_key():
         return "Invalid key", 401
 
 
-@app.route( '/installer_run', methods=['POST'])
+@app.route( '/run_installer', methods=['POST'])
 def yfc_installer_run():
     print( "running installer..." )
 
-    subprocess.run([ 'chmod', '+x', 'yfc_install.sh' ])
+
     subprocess.Popen(
-        ['./yfc_install.sh'],
+        ['bash', 'yfc_install.sh'],
         env = env,
         stdout = None, 
         stderr = None,

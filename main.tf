@@ -13,12 +13,7 @@ terraform {
 
 variable "project_id"   {}
 variable "region"       { default = "us-central1" }
-variable "infra_bucket" {}
 variable "token" {
-  type      = string
-  sensitive = true
-}
-variable "api_key" {
   type      = string
   sensitive = true
 }
@@ -28,6 +23,10 @@ data "google_client_openid_userinfo" "me" {}
 provider "google" {
   project = var.project_id
   region  = var.region
+}
+
+data "google_project" "project" {
+  project_id = var.project_id
 }
 
 locals {
@@ -62,18 +61,32 @@ resource "google_project_service" "apis" {
   disable_on_destroy = false
 }
 
+resource "google_service_account" "function_sa" {
+  account_id   = "user-instance-sa"
+  display_name = "Service Account to Your-Fable-Cloud function"
+}
+
+resource "google_storage_bucket_iam_member" "function_storage_access" {
+  bucket = google_storage_bucket.user_config.name
+  role   = "roles/storage.objectUser" 
+  member = "serviceAccount:${google_service_account.function_sa.email}"
+}
+
 resource "google_cloudfunctions2_function" "function" {
   name     = local.cf_name
   location = var.region
 
-depends_on = [google_project_service.apis]
+depends_on = [
+  google_storage_bucket_iam_member.function_storage_access,
+  google_project_service.apis
+]
 
   build_config {
     runtime     = "python312"
     entry_point = "main" 
     source {
       storage_source {
-        bucket = var.infra_bucket
+        bucket = google_storage_bucket.user_config.name
         object = "source/fablefacet.zip"
       }
     }
@@ -85,11 +98,30 @@ depends_on = [google_project_service.apis]
     max_instance_request_concurrency = 1
     timeout_seconds = 60
 
+    service_account_email = google_service_account.function_sa.email
+
     environment_variables = {
-      GEMINI_KEY = var.api_key
-      email = lower(trimspace(data.google_client_openid_userinfo.me.email))
+      SUB = lower(trimspace(data.google_client_openid_userinfo.me.sub))
+      EMAIL = lower(trimspace(data.google_client_openid_userinfo.me.email))
+      CONFIG_BUCKET = google_storage_bucket.user_config.name
     }
   }
+}
+
+resource "google_project_service" "iap_api" {
+  project = var.project_id
+  service = "iap.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
+  project = google_cloud_run_v2_service.default.project
+  location = google_cloud_run_v2_service.default.location
+  name = google_cloud_run_v2_service.default.name
+  role   = "roles/run.invoker"
+  member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-iap.iam.gserviceaccount.com"
+
+  depends_on = [google_project_service.iap_api]
 }
 
 resource "null_resource" "registro_com_rollback" {
@@ -122,10 +154,17 @@ resource "null_resource" "registro_com_rollback" {
         -d "user=${self.triggers.email}" \
         -d "token=$TOKEN" )
 
+      gcloud run services update ${local.cf_name} \
+      --iap=enabled \
+      --no-invoker-iam-check \
+      --region=${var.region} \
+      --quiet
+
       if [ "$HTTP_RESPONSE" != "200" ]; then
         echo "----------------------------------------------------------"
         echo "Fatal Error registering \(Status: $HTTP_RESPONSE\)"
-        echo "Fable Facet rejected the registration. Probable cause:"
+        echo "Uninstall and Reinstall Your-Fable-Cloud."
+        echo "Probable cause:"
         cat response_body.txt
         echo -e "\n----------------------------------------------------------"
         exit 1
@@ -135,3 +174,4 @@ resource "null_resource" "registro_com_rollback" {
     EOT
   }
 } 
+

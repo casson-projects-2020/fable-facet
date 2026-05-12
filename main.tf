@@ -145,14 +145,31 @@ resource "null_resource" "registro_com_rollback" {
       TOKEN=$(gcloud auth print-identity-token)
       
       echo "Registering Your-Fable-Cloud with Fable Facet..."
-      
-      HTTP_RESPONSE=$(curl -s -w "%%{http_code}" -o response_body.txt \
-        -X POST "${self.triggers.cf_url}" \
-        -H "Content-Type: application/x-www-form-urlencoded" \
-        -d "task=register" \
-        -d "self=${self.triggers.cf_url}" \
-        -d "user=${self.triggers.email}" \
-        -d "token=$TOKEN" )
+
+      for i in {1..3}; do
+          echo "Register attempt $i..."
+
+        HTTP_RESPONSE=$(curl -s -w "%%{http_code}" -o response_body.txt \
+            --max-time 30 \
+            -X POST "${self.triggers.cf_url}" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "task=register" \
+            -d "self=${self.triggers.cf_url}" \
+            -d "user=${self.triggers.email}" \
+            -d "token=$TOKEN" )
+
+        if [ "$HTTP_RESPONSE" == "200" ]; then
+            echo "Your-Fable-Cloud successfuly registered in Fable Facet API"
+            break
+        else
+            echo "Register failure (HTTP $HTTP_RESPONSE). Retrying in $((i * 5))s..."
+            sleep $((i * 5))
+        fi
+        
+        if [ "$i" == "3" ]; then
+          echo "Fatal: Can't register after 3 attempts."
+        fi
+      done
 
       gcloud run services update ${local.cf_name} \
       --iap=enabled \

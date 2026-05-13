@@ -7,7 +7,7 @@ This is a "Open In Google Cloud Shell" repo - it will create in your Google Clou
 [Fable Facet](https://fablefacet.com/ffacet.mesis.html). While this will be needed for you to be able to publish in the site, your GCP resources will be used 
 only to process content you create - they will never be shared with Fable Facet or others.  
 
-Your-Fable-Cloud is designed to aid fictional writing, in an interactive reading experience - you the author (or another reader) in the role of the protagonist (or other character) while the AI generates the story as you go, follow previously written guidelines.
+Your-Fable-Cloud is designed to aid fictional writing, in an interactive reading experience - you the author (or another reader) in the role of the protagonist (or other character) while the AI generates the story as you go, follow previously written guidelines and on-the-fly guidance.
 
 By installing this backend in your own GCP account, you maintain control over your data and usage. The system is designed to be inside the always-free tier on GCP, but if you already use the free tier in other projects you will have to manage this aspect.
  
@@ -15,7 +15,7 @@ If you landed here from Fable Facet site and wants to install Your-Fable-Cloud, 
 
 Please read the Terms of Use below and on the website before proceed. Also make sure the email registered in the site is the same that is the owner of the GCP account.
 
-[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?show=terminal&cloudshell_git_repo=https://github.com/casson-projects-2020/fable-facet&cloudshell_tutorial=tutorial_entry.md&tutorial_reset=true&authuser=1)
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?authuser=1&show=terminal&cloudshell_git_repo=https://github.com/casson-projects-2020/fable-facet&cloudshell_tutorial=tutorial_entry.md&tutorial_reset=true&authuser=1)
 
 ## :warning: Terms of Use Summary
 ### Important: This is a brief overview. By installing this software, you agree to the full Terms of Service hosted on our website.

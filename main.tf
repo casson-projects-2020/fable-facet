@@ -8,11 +8,24 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 5.0" # Força o uso da versão 5.x
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0" # Isso garante estabilidade
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.0"
+    }
   }
 }
 
-variable "project_id"   {}
-variable "region"       { default = "us-central1" }
+variable "project_id"   {
+  type = string
+}
+variable "region"       { 
+  type = string
+  default = "us-central1" 
+}
 variable "token" {
   type      = string
   sensitive = true
@@ -36,9 +49,6 @@ locals {
   payload_ready = "${local.payload_raw}${local.padding}"
   decoded       = jsondecode( base64decode( local.payload_ready ))
   sub           = local.decoded.sub 
-  sub_hash      = substr( sha256("${local.sub}"), 0, 10 )
-  cf_name       = "ffacet-user-${local.sub_hash}"
-  central_api   = "https://api.fablefacet.com/register"
 }
 
 locals {
@@ -61,15 +71,30 @@ resource "google_project_service" "apis" {
   disable_on_destroy = false
 }
 
+resource "google_project_service" "iap_api" {
+  project  = var.project_id
+  service  = "iap.googleapis.com"
+
+  disable_on_destroy = false
+}
+
 resource "google_service_account" "function_sa" {
   account_id   = "user-instance-sa"
   display_name = "Service Account to Your-Fable-Cloud function"
 }
 
 resource "google_storage_bucket_iam_member" "function_storage_access" {
-  bucket = google_storage_bucket.user_config.name
+  bucket = "${var.project_id}-fable-data"
   role   = "roles/storage.objectUser" 
   member = "serviceAccount:${google_service_account.function_sa.email}"
+}
+
+resource "random_id" "suffix" {
+  byte_length = 5
+}
+
+locals {
+  cf_name = "ffacet-user-${random_id.suffix.hex}"
 }
 
 resource "google_cloudfunctions2_function" "function" {
@@ -86,7 +111,7 @@ depends_on = [
     entry_point = "main" 
     source {
       storage_source {
-        bucket = google_storage_bucket.user_config.name
+        bucket = "${var.project_id}-fable-data"
         object = "source/fablefacet.zip"
       }
     }
@@ -101,23 +126,17 @@ depends_on = [
     service_account_email = google_service_account.function_sa.email
 
     environment_variables = {
-      SUB = lower(trimspace(data.google_client_openid_userinfo.me.sub))
+      SUB = lower(trimspace(local.sub))
       EMAIL = lower(trimspace(data.google_client_openid_userinfo.me.email))
-      CONFIG_BUCKET = google_storage_bucket.user_config.name
+      CONFIG_BUCKET = "${var.project_id}-fable-data"
     }
   }
 }
 
-resource "google_project_service" "iap_api" {
-  project = var.project_id
-  service = "iap.googleapis.com"
-  disable_on_destroy = false
-}
-
 resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
-  project = google_cloud_run_v2_service.default.project
-  location = google_cloud_run_v2_service.default.location
-  name = google_cloud_run_v2_service.default.name
+  project = var.project_id
+  location = var.region
+  name = google_cloudfunctions2_function.function.name
   role   = "roles/run.invoker"
   member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-iap.iam.gserviceaccount.com"
 
@@ -127,36 +146,30 @@ resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
 resource "null_resource" "registro_com_rollback" {
   triggers = {
     cf_url = google_cloudfunctions2_function.function.service_config[0].uri
-    email  = lower(trimspace(data.google_client_openid_userinfo.me.email))
   }
 
   depends_on = [ google_cloudfunctions2_function.function ]
 
   provisioner "local-exec" {
     command = <<EOT
-      echo "Waiting 10s for DNS and permissions to propagate..."
-      sleep 10
-
       gcloud run services update ${local.cf_name} \
-      --no-invoker-iam-check \
-      --region=${var.region} \
-      --quiet
+        --region="us-central1" \
+        --iap=enabled \
+        --no-allow-unauthenticated \
+        --project=${var.project_id}
 
-      TOKEN=$(gcloud auth print-identity-token)
-      
+      TOKEN=$(gcloud auth print-identity-token --audiences='${self.triggers.cf_url}')
+
       echo "Registering Your-Fable-Cloud with Fable Facet..."
 
       for i in {1..3}; do
           echo "Register attempt $i..."
 
         HTTP_RESPONSE=$(curl -s -w "%%{http_code}" -o response_body.txt \
-            --max-time 30 \
-            -X POST "${self.triggers.cf_url}" \
-            -H "Content-Type: application/x-www-form-urlencoded" \
-            -d "task=register" \
-            -d "self=${self.triggers.cf_url}" \
-            -d "user=${self.triggers.email}" \
-            -d "token=$TOKEN" )
+          -X POST "https://api.fablefacet.com" \
+          -H "Content-Type: application/x-www-form-urlencoded" \
+          -d "task=register" \
+          -d "token=$TOKEN" )
 
         if [ "$HTTP_RESPONSE" == "200" ]; then
             echo "Your-Fable-Cloud successfuly registered in Fable Facet API"
@@ -171,23 +184,18 @@ resource "null_resource" "registro_com_rollback" {
         fi
       done
 
-      gcloud run services update ${local.cf_name} \
-      --iap=enabled \
-      --no-invoker-iam-check \
-      --region=${var.region} \
-      --quiet
-
       if [ "$HTTP_RESPONSE" != "200" ]; then
         echo "----------------------------------------------------------"
         echo "Fatal Error registering \(Status: $HTTP_RESPONSE\)"
         echo "Uninstall and Reinstall Your-Fable-Cloud."
+        echo "Please contact us."
         echo "Probable cause:"
         cat response_body.txt
         echo -e "\n----------------------------------------------------------"
         exit 1
       fi
-      
-      echo "Your-Fable-Cloud is registered in Fable Facet site"
+
+      echo "Your-Fable-Cloud is installed in your account and registered in Fable Facet site"
     EOT
   }
 } 

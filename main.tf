@@ -169,7 +169,7 @@ resource "null_resource" "registro_com_rollback" {
           -X POST "https://api.fablefacet.com" \
           -H "Content-Type: application/x-www-form-urlencoded" \
           -d "task=register" \
-          -d "token=$TOKEN" )
+          -d "jwt=$TOKEN" )
 
         if [ "$HTTP_RESPONSE" == "200" ]; then
             echo "Your-Fable-Cloud successfuly registered in Fable Facet API"

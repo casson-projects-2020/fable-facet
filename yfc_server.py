@@ -183,49 +183,6 @@ def get_email():
             err_ += "unavailable. Your-Fable-Cloud will not work."
             fatal_error = True
             return 
-
-    try:
-        result = subprocess.run(
-            ["gcloud", "config", "get-value", "project" ],
-            capture_output = True,
-            text = True,
-            check = True
-        )
-        project = result.stdout.strip()
-
-    except subprocess.CalledProcessError as e:
-        err_ = f"Cannot run gcloud config get-value project: {e.stderr}"
-        print( err_, flush = True )
-        return f"❌ error, please click restart [{err_}]"
-
-    try:
-        result = subprocess.run(
-            ["gcloud", "projects", "get-ancestors", project ],
-            capture_output = True,
-            text = True,
-            check = True
-        )
-        ancestors = result.stdout
-
-    except subprocess.CalledProcessError as e:
-        err_ = f"Cannot run gcloud projects get-ancestors {project}: {e.stderr}"
-        print( err_, flush = True )
-        return f"❌ error, please click restart [{err_}]"
-
-    # This license restriction is a security measure to ensure that secrets 
-    # (such as your Gemini API keys) remain private. Privacy cannot be guaranteed 
-    # if the account is managed by a third-party organization. 
-    # Additionally, managing the Free Tier is complex; the presence of other 
-    # organization-level resources could lead to unexpected Google Cloud charges. 
-    # Bypassing this restriction makes the user solely responsible for any 
-    # consequences, as per the Fable Facet Terms of Service on our website.
-    if "organization" in ancestors:
-        print( f"account is not personal {ancestors}", flush = True )
-        err_ = "&#x274c;&#xFE0F; Fatal Error: This GCP account is part of an "
-        err_ += "organization. Fable Facet's license only allows personal accounts."
-        fatal_error = True
-
-        return err_
     
     try:
         result = subprocess.run(

@@ -85,8 +85,14 @@ async function get_email()
             show_loader({ text: status.textContent });
             return;
         }
-        else
-            email_box.innerHTML += " " + email;
+
+        if( in_( email, "[" ))
+        {   console.log( email );
+            email = email.substr( 0, email.indexOf( "[" ));
+            restart.style.display = "block";
+        }
+        
+        email_box.innerHTML += " " + email;
     }
     catch( err ) 
     {

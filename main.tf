@@ -158,6 +158,8 @@ resource "null_resource" "registro_com_rollback" {
         --no-allow-unauthenticated \
         --project=${var.project_id}
 
+      export cf_url=${self.triggers.cf_url}
+
       TOKEN=$(gcloud auth print-identity-token --audiences='${self.triggers.cf_url}')
 
       echo "Registering Your-Fable-Cloud with Fable Facet..."
@@ -187,11 +189,12 @@ resource "null_resource" "registro_com_rollback" {
       if [ "$HTTP_RESPONSE" != "200" ]; then
         echo "----------------------------------------------------------"
         echo "Fatal Error registering \(Status: $HTTP_RESPONSE\)"
-        echo "Uninstall and Reinstall Your-Fable-Cloud."
+        echo "If the error appear to be temporary, reinstall Your-Fable-Cloud."
         echo "Please contact us."
         echo "Probable cause:"
         cat response_body.txt
         echo -e "\n----------------------------------------------------------"
+        export tf_error=1
         exit 1
       fi
 

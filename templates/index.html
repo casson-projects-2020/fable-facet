@@ -24,14 +24,6 @@
     rel="stylesheet" 
     href="https://fonts.googleapis.com/css2?family=Blinker:wght@100;200;300;400;600;700;800;900&amp;display=block" 
     crossorigin="true" class="blinker_link ">
-<link 
-    rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.1.0/css/xterm.min.css">
-<script 
-    src="https://cdn.jsdelivr.net/npm/xterm@5.1.0/lib/xterm.min.js">
-</script>
-<script 
-    src="https://cdn.socket.io/4.5.4/socket.io.min.js">
-</script>
 <script>
   const term = new Terminal({
     theme: { background: '#1e1e1e' },
@@ -110,7 +102,7 @@ async function get_email()
         // if it is an error
         if( "Error:" in email )
         {
-            if( "Fatal Error:" not in email )
+            if( email.includes( "Fatal Error:" ) == false )
             {   email = "❌ Error: please click 'restart': " + email;
                 restart.style.display = "block";
             }

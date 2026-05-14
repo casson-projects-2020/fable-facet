@@ -152,9 +152,10 @@ def get_email():
             return err_
 
     except Exception as e:
-        print( f"Cannot run gcloud billing accounts list: {e.stderr}", flush = True )
-        return "## error, please click restart"
-            
+        err_ = f"Cannot run gcloud billing accounts list: {e.stderr}"
+        print( err_, flush = True )
+        return f"❌ error, please click restart [{err_}]"
+                    
         # Currencies that indicate that Gemini Free Tier is not provided
         restricted_currencies = [
             "EUR", # Europe
@@ -193,9 +194,9 @@ def get_email():
         project = result.stdout.strip()
 
     except subprocess.CalledProcessError as e:
-        # Caso o gcloud retorne erro (ex: sem conta configurada)
-        print( f"Cannot run gcloud config get-value project: {e.stderr}", flush = True )
-        return "## error, please click restart"
+        err_ = f"Cannot run gcloud config get-value project: {e.stderr}"
+        print( err_, flush = True )
+        return f"❌ error, please click restart [{err_}]"
 
     try:
         result = subprocess.run(
@@ -207,8 +208,9 @@ def get_email():
         ancestors = result.stdout
 
     except subprocess.CalledProcessError as e:
-        print( f"Cannot run gcloud projects get-ancestors {project}: {e.stderr}", flush = True )
-        return "## error, please click restart"
+        err_ = f"Cannot run gcloud projects get-ancestors {project}: {e.stderr}"
+        print( err_, flush = True )
+        return f"❌ error, please click restart [{err_}]"
 
     # This license restriction is a security measure to ensure that secrets 
     # (such as your Gemini API keys) remain private. Privacy cannot be guaranteed 
@@ -235,9 +237,9 @@ def get_email():
         return result.stdout.strip()
 
     except subprocess.CalledProcessError as e:
-        # Caso o gcloud retorne erro (ex: sem conta configurada)
-        print( f"Cannot run gcloud config get-value account: {e.stderr}", flush = True )
-        return "## error, please click restart"
+        err_ = f"Cannot run gcloud config get-value account: {e.stderr}"
+        print( err_, flush = True )
+        return f"❌ error, please click restart [{err_}]"
 
 
 env = os.environ.copy()
@@ -289,7 +291,7 @@ def yfc_installer_run():
         cwd = os.getcwd()
         home_dir = os.path.expanduser( "~" )
         safe_ = os.path.join( home_dir, "cloudshell_open" )
-        is_target = ( "fable-facet" in os.path.basename( cwd ))
+        is_target = "fable-facet" in os.path.basename( cwd ) 
     
         cmd = f"""
 (

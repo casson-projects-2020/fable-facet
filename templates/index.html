@@ -1,17 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="../static/style.css">  
-<title>Your Fable Cloud - Authors + AI to fictional texts</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com" class="genos_first ">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" class="genos_sec ">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Genos:ital,wght@0,100..900;1,100..900&amp;display=block" crossorigin="true" class="genos_last ">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Blinker:wght@100;200;300;400;600;700;800;900&amp;display=block" crossorigin="true" class="blinker_link ">
+<link 
+    rel="stylesheet" type="text/css" href="../static/style.css">  
+<title
+    >Your Fable Cloud - Authors + AI to fictional texts
+</title>
+<meta 
+    name="viewport" content="width=device-width, initial-scale=1.0">
+<link 
+    rel="icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' 
+    viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%81%3C/text%3E%3C/svg%3E">
+
+<link 
+    rel="preconnect" href="https://fonts.googleapis.com" class="genos_first ">
+<link 
+    rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" class="genos_sec ">
+<link 
+    rel="stylesheet" 
+    href="https://fonts.googleapis.com/css2?family=Genos:ital,wght@0,100..900;1,100..900&amp;display=block" 
+    crossorigin="true" class="genos_last ">
+<link 
+    rel="stylesheet" 
+    href="https://fonts.googleapis.com/css2?family=Blinker:wght@100;200;300;400;600;700;800;900&amp;display=block" 
+    crossorigin="true" class="blinker_link ">
+<link 
+    rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.1.0/css/xterm.min.css">
+<script 
+    src="https://cdn.jsdelivr.net/npm/xterm@5.1.0/lib/xterm.min.js">
+</script>
+<script 
+    src="https://cdn.socket.io/4.5.4/socket.io.min.js">
+</script>
+<script>
+  const term = new Terminal({
+    theme: { background: '#1e1e1e' },
+    convertEol: true, // Garante que a quebra de linha do Linux funcione no browser
+    cursorBlink: true
+  });
+  term.open(document.getElementById('terminal-container'));
+
+  const socket = io();
+
+  // Quando o botão for clicado no seu Web App
+  function startInstall() {
+    term.writeln('Iniciando instalação...\r\n');
+    socket.emit('start_install');
+  }
+
+  // Escuta as linhas vindas do Python
+  socket.on('terminal_output', function(msg) {
+    term.write(msg.data);
+  });
+
+  // Quando o Terraform terminar
+  socket.on('install_complete', function(msg) {
+    if (msg.status === 0) {
+      term.writeln('\r\n\x1b[1;32mINSTALAÇÃO CONCLUÍDA COM SUCESSO!\x1b[0m');
+      // Aqui você faz o redirect para a Cloud Function final
+      setTimeout(() => { window.location.href = URL_FINAL; }, 2000);
+    } else {
+      term.writeln('\r\n\x1b[1;31mERRO NA INSTALAÇÃO.\x1b[0m');
+    }
+  });
+</script>
 <script>
 elem = function( id )
 {
-    return document.getElementById( id );
+    var elem_ = document.getElementById( id );
+    if( elem_ == null ) 
+        elem_ = document.querySelectorAll( id );
+
+    return elem_;
+}
+
+
+function show_loader( params )
+{
+    if( "text" in params )
+        elem( "loader_txt" ).textContent = params.text;
+    else
+        elem( "loader_txt" ).textContent = "please wait...";
+     
+    if( "spinner" in params )
+        elem( "spinner" ).style.display = "block";
+    else
+        elem( "spinner" ).style.display = "none";
+
+    if( "ok" in params )
+        elem( "ok_loader" ).style.display = "block";
+    else
+        elem( "ok_loader" ).style.display = "none";
+    
+    elem( "loader" ).style.display = "block";
+}
+
+
+// first to run - a 1x1 pixel runs this on onload
+async function get_email() 
+{
+    const email_box = elem( "target" );
+    const status = elem( "status" );
+    restart = elem( "restart" );
+
+    try 
+    {   const response = await fetch( './get_email' );
+        email = await response.text();
+        
+        // if it is an error
+        if( "Error:" in email )
+        {
+            if( "Fatal Error:" not in email )
+            {   email = "❌ Error: please click 'restart': " + email;
+                restart.style.display = "block";
+            }
+            else
+                restart.style.display = "none";
+
+            status.textContent = email;
+            show_loader({ text: status.textContent });
+            return;
+        }
+        else
+            email_box.innerHTML += " " + email;
+    }
+    catch( err ) 
+    {
+        status.textContent = "❌ Error: please click 'restart': " + err;
+        show_loader({ text: status.textContent, ok: true });
+        
+        restart.style.display = "block";
+    }
 }
 
 
@@ -24,12 +143,13 @@ async function createProject()
     if( !projectName || projectName.length < 6 )
     {
         status.textContent = "⚠️ Please enter a valid project name (min 6 characters, max 30)";
+        show_loader({ text: status.textContent, ok: true });
         return;
     }
     step1.style.display = "none";
 
     status.textContent = "⏳ Creating project on GCP... that can take a minute...";
-    elem( "loader" ).style.display = "block";
+    show_loader({ text: status.textContent, spinner: true });
 
     try 
     {
@@ -46,19 +166,20 @@ async function createProject()
         {
             status.textContent = "✅ " + data.message;
             elem( "loader" ).style.display = "none";
-            elem( "step2" ).style.display = "block"
+
+            run_installer();            
         }
         else
-        {
-            status.textContent = "❌ Error: please click 'restart': " + data.error;
-            elem( "loader" ).style.display = "none";
-            elem( "restart" ).style.display = "block";
+        {   status.textContent = "❌ Error: please click 'restart': " + data.error;
         }
     } 
     catch( err ) 
     {
         status.textContent = "❌ Error: please click 'restart': " + err;
-        elem( "loader" ).style.display = "none";
+    }
+    
+    if( status.textContent[ 0 ] == "❌" )
+    {   show_loader({ text: status.textContent, ok: true });
         elem( "restart" ).style.display = "block";
     }
 }
@@ -87,111 +208,72 @@ async function selectProject()
         {
             status.textContent = "✅ " + data.message;
             elem( "loader" ).style.display = "none";
-            elem( "step2" ).style.display = "block";
+            
+            run_installer();            
         }
         else
-        {
-            status.textContent = "❌ Error: please click 'restart': " + data.error;
-            elem( "loader" ).style.display = "none";
-            elem( "restart" ).style.display = "block";
+        {   status.textContent = "❌ Error: please click 'restart': " + data.error;
         }
     } 
     catch( err ) 
     {
         status.textContent = "❌ Error: please click 'restart': " + err;
-        elem( "loader" ).style.display = "none";
+    }
+    
+    if( status.textContent[ 0 ] == "❌" )
+    {   show_loader({ text: status.textContent, ok: true });
         elem( "restart" ).style.display = "block";
     }
 }
 
 
-async function installer_run() 
+function run_installer()
 {
-    elem( "step2" ).style.display = "none";
-    elem( "target" ).textContent = `Installer running... you can close this tab (and AI Studio) 
-        and follow the logs on the Google Cloud Shell terminal`;
     const status = elem( "status" );
     const restart = elem( "restart" );
     restart.style.display = "none";
     status.style.display = "none";
-    elem( "step3" ).style.display = 'none';
 
+    var is_error = false;
     try 
     {
-        const response = await fetch( './installer_run', 
+        const eventSource = new EventSource( './run_installer' );
+
+        eventSource.onmessage = (event) => 
         {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pass: "true" })
-        });
+            const panel = elem( 'terminal' );
+            const newLine = document.createElement( 'div' );
+            newLine.textContent = event.data;
+            panel.appendChild( newLine );
+            panel.scrollTop = panel.scrollHeight;
+        };
+
+        eventSource.onerror = () => 
+        {   eventSource.close();
+        };
+        
+        status.textContent = "✔ Success: Your-Fable-Cloud is installed.";
+        elem( "step3_text" ).textContent = "";
+        elem( "app_title").textContent = "Your-Fable-Cloud is installed";
+        var msg = "<br>You may close this tab and Cloud Shell and return to ";
+        msg += "Fable Facet site to link (authorize) your email.";
+
+        show_loader({ text: status.textContent + msg });
     }
+    
+    // TODO: checar o bubble das exceções, pq este aqui seria o 3o link:
+    // roda acima, q roda o python, q roda o bash (q por sua vez roda o terraform,
+    // entao temos 4 niveis, mas o terraform faz rollback de si mesmo)
+    // uma excecao no yfc_install chega aqui? Existe essa possibilidade de
+    // restart abaixo? Informar o usuario q ele pode fechar tudo? Existe alguma 
+    // chance do diretorio do repo nao ser apagado?
     catch( err ) 
     {
-        alert( err );
-
+        is_error = true;
+        status.textContent = "❌ Error: please click 'restart': " + data.error;
+        show_loader({ text: status.textContent, ok: true });
         restart.style.display = "block";
         status.style.display = "block";
-
-        status.textContent = "❌ Error: please click 'restart': " + data.error;
-    }
-}
-
-async function get_email() 
-{
-    const email_box = elem( "target" );
-    const step2_key = elem( "step2_key" );
-    const status = elem( "status" );
-
-    try 
-    {
-        const response = await fetch( './get_email' );
-        email = await response.text();
-        email_box.innerHTML += " " + email + `<br/><br/>`;
-
-        step2_key.onclick = () =>
-        {   window.open( "https://accounts.google.com/AccountChooser" + 
-                "?continue=https://aistudio.google.com/app/apikey&Email=" + email,'_blank' );
-        }
-
-        const input_ = elem( 'gemini_key' );
-
-        input_.addEventListener( 'beforeinput', ( e ) => 
-        {   if( e.inputType == 'insertText' || e.inputType == 'insertCompositionText' )
-                e.preventDefault();
-        });
-
-        input_.addEventListener( 'paste', async ( e ) => 
-        {
-            try 
-            {
-                const response = await fetch( './validate_key', 
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ key: event.clipboardData.getData( 'text/plain' ) })
-                });
-                const text = await response.text();
-                if( text == "ok" )
-                {   elem( "step2" ).style.display = 'none';
-                    elem( "step3" ).style.display = 'block';
-                }
-                else
-                {
-                    status.textContent = "❌ Error while validating key: " + text;
-                    elem( "gemini_key" ).style.backgroundColor = "#FFA0A0";
-                }
-            }
-            catch( err ) 
-            {
-                alert( err );
-                status.textContent = "❌ Error while validating key: " + err;
-                elem( "gemini_key" ).style.backgroundColor = "#FFA0A0";
-            }
-        });
-    }
-    catch( err ) 
-    {
-        alert( err );
     }
 }
 </script>
@@ -203,7 +285,9 @@ async function get_email()
         <div 
                 class="bg_placeholder ">
         </div>
-        <h1>Your-Fable-Cloud Installer
+        <div 
+                class="bg_txt_plchld ">
+        </div>
         </h1>
     </div>
 </header>
@@ -211,12 +295,16 @@ async function get_email()
         id="main_section">
     <div 
             class="container">
+        <h1
+                id="app_title">
+            Installing
+        </h1>
+        <div 
+                id="target">account email: 
+        </div>
         <img                        data-rem="imagem de um unico pixel branco"
                 src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="get_email()" 
         />
-        <div 
-                id="target">⚠️ using email: 
-        </div>
         <br/>
         <div 
                 id="step1">
@@ -253,67 +341,11 @@ async function get_email()
             </button>
         </div>
         <div 
-                id="step2" style="display: none" >
-            <h2>Create a API Key for Gemini
-            </h2>
-            <p>⚠️ This app is a professional tool for developers.
-            </p> 
-            <p>Using your own Gemini API key is a step reserved for 
-                developers, so you acknowledge that you are operating as a developer under the
-                <a 
-                        href="https://ai.google.dev/gemini-api/terms" target="_blank"
-                    >Gemini API Additional Terms of Service
-                </a>. 
-                This integration is intended for professional content creation (of texts) and publishing within the Fable 
-                Facet network. You must be 18+ years old.
-            </p>
-            <p>You also declare that the API key used here is yours.
-            </p>
-            <p>Click on the button below to be redirected to Google AI Studio Keys.
-            </p>
-            <h3>Steps on Google AI Studio
-            </h3>
-            <p><b>1 - You have to select the same project you selected / created here.
-            </b></p>
-            <p 
-                    class="small_tab">(if you don't see it, click on "Import Projects")
-            </p>
-            <p><b>2 - Click on "Create API key"
-            </b></p>
-            <p><b>3 - Give a name to your key, and click "create key"
-            </b></p>
-            <p 
-                    class="small_tab"
-                >(It can be any name Ex: Fable Facet key)
-            </p>
-            <p><b>4 - Click on the button "copy API key"
-            </b></p>
-            <p><b>5 - Paste the API key below
-            </b></p>
-            <p 
-                    class="small_tab"
-                >(This installer runs on your GCP account: your key will never cross this boundary - 
-                it is a secret and will never be shared with Fable Facet or any other. Please analyze the code if
-                you have any doubts about that)
-            </p>
-            <button 
-                    id="step2_key"
-                >Create your Google Gemini API key
-            </button>
-            <br/><br/>
-            <div 
-                    class="pseudo-input" id="gemini_key" contenteditable="true" spellcheck="false">
-            </div>
-            <button 
-                    id="clear_input" 
-                    onclick="const o = elem('gemini_key'); o.textContent=''; o.style.backgroundColor = 'white'"
-                >🗑️
-            </button>
-        </div>
-        <div 
-                id="loader" style="display: none; text-align: center;">
+                id="loader" class="loader in_loader" style="display: none; text-align: center;">
+            <p id="loader_txt">please wait...</p><br/>
             <svg 
-                    width="60" height="120" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    width="60" height="120" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="spinner"
+                    class="in_loader">
                 <style
                     >.spinner_hzlK{animation:spinner_vc4H .8s linear infinite;animation-delay:-.8s; fill: black;}
                     .spinner_koGT{animation-delay:-.65s; fill: black;}
@@ -327,12 +359,24 @@ async function get_email()
                     width="6" height="22"/><rect class="spinner_hzlK spinner_YF1u" x="17" y="1" width="6" height="22"
                 />
             </svg>
+            <button 
+                    onclick="elem( '.in_loader').forEach( el => el.style.display = 'none' )" 
+                    id="ok_loader" class="in_loader">
+                ok
+            </button>
         </div>
         <br/>
-        <button 
-                id="step3" style="display: none" onclick="installer_run()"
-            >All set - Install Fable Cloud
-        </button>
+        <div 
+                id="step3" style="display: none"
+            >
+            <div
+                    id="step3_text"> 
+                Installing Your-Fable-Cloud on the project...
+            </div>
+            <div 
+                id="terminal" style="width: 85%; height: 400px;">
+            </div>
+        </div>
         <br/><br/>
         <button 
                 id="restart" onclick="location.reload()"

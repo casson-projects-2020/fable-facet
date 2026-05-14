@@ -13,7 +13,7 @@ sudo apt install dialog
     if pgrep -f "[y]fc_server.py" > /dev/null; then
         echo "server already running"
     else
-        python3 yfc_server.py > _server.log 2>&1 &
+        python3 yfc_server.py &
     fi
 
     sleep 5

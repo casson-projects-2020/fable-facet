@@ -7,9 +7,8 @@ terraform init -reconfigure \
   -backend-config="prefix=terraform/state"
 terraform destroy \
   -auto-approve \
-  -var="api_key=AIzaSy_dummy" \
+  -var="region=us-central1" \
   -var="project_id=${PROJECT_ID}" \
-  -var="infra_bucket=${BUCKET_NAME}" \
   -var="token=${TOKEN}"
 # delete the bucket after cloud function removal
 gcloud storage rm -r "gs://${BUCKET_NAME}"

@@ -206,10 +206,10 @@ env = os.environ.copy()
 def yfc_installer_run():
     global fatal_error
 
-    def generate( fatal_error ):
+    def generate( fatal_error_loc ):
         outp = ""
 
-        if not fatal_error:
+        if not fatal_error_loc:
             yield "data: running installer...\n\n";
 
             process = subprocess.Popen(
@@ -218,7 +218,8 @@ def yfc_installer_run():
                 stdout = subprocess.PIPE,
                 stderr = subprocess.STDOUT, 
                 text = True,
-                bufsize = 1
+                bufsize = 1,
+                universal_newlines = True
             )
 
             try:
@@ -242,7 +243,10 @@ def yfc_installer_run():
 
         else:
             outp = "installer failed, starting rollback...";
-        
+
+        # Envia uma mensagem de finalização para o JS saber que acabou antes do crash
+        yield f"data: internal_status:finished_{'ok' if not outp else 'error'}\n\n"
+
         # erase the folder fable-facet inside cloudshell_open to avoid
         # conflicts if the user ever try to install again
         cwd = os.getcwd()

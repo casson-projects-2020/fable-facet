@@ -34,20 +34,24 @@ elem = function( id )
     return elem_;
 }
 
-    
+
+in_ = function( tgt, propname )
+{   return tgt.hasOwnProperty( propname );   }
+
+
 function show_loader( params )
 {
-    if( "text" in params )
+    if( in_( params, "text" ))
         elem( "loader_txt" ).textContent = params.text;
     else
         elem( "loader_txt" ).textContent = "please wait...";
      
-    if( "spinner" in params )
+    if( in_( params, "spinner" ))
         elem( "spinner" ).style.display = "block";
     else
         elem( "spinner" ).style.display = "none";
 
-    if( "ok" in params )
+    if( in_( params, "ok" ))
         elem( "ok_loader" ).style.display = "block";
     else
         elem( "ok_loader" ).style.display = "none";
@@ -68,7 +72,7 @@ async function get_email()
         email = await response.text();
         
         // if it is an error
-        if( "Error:" in email )
+        if( in_( email, "Error:" ))
         {
             if( email.includes( "Fatal Error:" ) == false )
             {   email = "❌ Error: please click 'restart': " + email;

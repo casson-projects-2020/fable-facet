@@ -42,9 +42,9 @@ in_ = function( tgt, propname )
 function show_loader( params )
 {
     if( in_( params, "text" ))
-        elem( "loader_txt" ).textContent = params.text;
+        elem( "loader_txt" ).innerHTML = params.text;
     else
-        elem( "loader_txt" ).textContent = "please wait...";
+        elem( "loader_txt" ).innerHTML = "please wait...";
      
     if( in_( params, "spinner" ))
         elem( "spinner" ).style.display = "block";

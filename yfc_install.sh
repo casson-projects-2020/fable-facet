@@ -4,22 +4,9 @@ set -e
 
 PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
 
-ORG_ID=$(gcloud projects get-ancestors $PROJECT_ID --format='value(id)' | tail -n 1)
-ANCESTOR_TYPE=$(gcloud projects get-ancestors $PROJECT_ID --format='value(type)' | tail -n 1)
-
-if [ "$ANCESTOR_TYPE" == "organization" ]; then
-    echo "⚠️ This project belongs to an Organization - the installation will abort"
-    echo "Fable Facet is licenced only to individual, personal GCP accounts"
-    echo "⚠️ Caution: don't remove this - other parts of the code will fail in GCP accounts linked to Organizations"
-    echo "------------------------------------------------------------"
-    echo "Press [ENTER] on the terminal to close..."
-    read -r  
-    exit 1
-fi
-
 USER_EMAIL=$(gcloud config get-value account)
 
-echo "📧 Detected user: $USER_EMAIL"
+echo "📧 user: $USER_EMAIL"
 echo
 
 REGION="us-central1"
@@ -27,39 +14,44 @@ BUCKET_NAME="${PROJECT_ID}-fable-data"
 
 echo "🚀 Starting install on project: $PROJECT_ID"
 
-if gsutil ls -b "gs://${BUCKET_NAME}" >/dev/null 2>&1; then
+if gcloud storage buckets describe gs://${BUCKET_NAME} >/dev/null 2>&1; then
     echo "✅ Bucket already exists."
 else
     echo "📦 Criating bucket..."
-    gsutil mb -l ${REGION} gs://${BUCKET_NAME}
-    gsutil versioning set on gs://${BUCKET_NAME}
+    gcloud storage buckets create gs://${BUCKET_NAME} --location=${REGION}
+    gcloud storage buckets update gs://${BUCKET_NAME} --versioning
 fi
 
 cd function_code
 zip -r ../fablefacet.zip .
 cd ..
-gsutil cp fablefacet.zip gs://${BUCKET_NAME}/source/fablefacet.zip
+gcloud storage cp fablefacet.zip gs://${BUCKET_NAME}/source/fablefacet.zip
     
 echo "🛠️ Initing Terraform..."
 TOKEN=$(gcloud auth print-identity-token)
+export TF_IN_AUTOMATION=true
+export TF_INPUT=false
+
 terraform init -reconfigure -backend-config="bucket=${BUCKET_NAME}" -backend-config="prefix=terraform/state"
 
-terraform apply -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"
+# check if terraform succeeded
+if terraform apply -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"; then
+    echo "✅ Success - Your-Fable-Cloud is installed. Get back to Fable Facet site to use it"
+    echo
+    echo "this script created one bucket on Cloud Storage, and one Cloud Run Function"
+    echo "If you want to uninstall it, see instructions on Fable Facet site site:"
+    echo "in Tech section, 'How to delete my account'"
+    echo
+    echo "You can now close the browser tab and Google Cloud Shell and return to Fable Facet site"
 
-echo "✅ All done - Your-Fable-Cloud is installed. Get back to Fable Facet site to use it"
-echo
-echo "this script created one bucket on Cloud Storage, and one Cloud Run Function"
-echo "If you want to uninstall it, just delete the resources, then use 'delete my account' on Fable Facet site"
-echo "Read more on Tech section, 'How to delete my account', on Fable Facet site"
-echo
-echo "If you delete the cloud function by accident, you may also need to use 'delete my account' to recreate it"
-echo "Read more on Tech section, 'I deleted the cloud function by accident', on Fable Facet site"
-echo
-echo "You can close the browser tab and return to Fable Facet site"
-echo
-echo
+else
+    terraform destroy -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"
 
+    echo "❌ Fatal Error: cannot install Your-Fable-Cloud."
+    echo
+    echo "If the error appears to be temporaty you may try to install again."
+    echo "Close the browser tab and Google Cloud Shell and return to Fable Facet site."
+    echo
+    echo "Please contact us."
 
-
-
-
+    exit 1

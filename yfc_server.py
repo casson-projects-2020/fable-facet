@@ -289,7 +289,7 @@ def yfc_installer_run():
         cwd = os.getcwd()
         home_dir = os.path.expanduser( "~" )
         safe_ = os.path.join( home_dir, "cloudshell_open" )
-        is_target = os.path.basename( cwd ) == "fable-facet"
+        is_target = ( "fable-facet" in os.path.basename( cwd ))
     
         cmd = f"""
 (

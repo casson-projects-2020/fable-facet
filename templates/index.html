@@ -25,38 +25,6 @@
     href="https://fonts.googleapis.com/css2?family=Blinker:wght@100;200;300;400;600;700;800;900&amp;display=block" 
     crossorigin="true" class="blinker_link ">
 <script>
-  const term = new Terminal({
-    theme: { background: '#1e1e1e' },
-    convertEol: true, // Garante que a quebra de linha do Linux funcione no browser
-    cursorBlink: true
-  });
-  term.open(document.getElementById('terminal-container'));
-
-  const socket = io();
-
-  // Quando o botão for clicado no seu Web App
-  function startInstall() {
-    term.writeln('Iniciando instalação...\r\n');
-    socket.emit('start_install');
-  }
-
-  // Escuta as linhas vindas do Python
-  socket.on('terminal_output', function(msg) {
-    term.write(msg.data);
-  });
-
-  // Quando o Terraform terminar
-  socket.on('install_complete', function(msg) {
-    if (msg.status === 0) {
-      term.writeln('\r\n\x1b[1;32mINSTALAÇÃO CONCLUÍDA COM SUCESSO!\x1b[0m');
-      // Aqui você faz o redirect para a Cloud Function final
-      setTimeout(() => { window.location.href = URL_FINAL; }, 2000);
-    } else {
-      term.writeln('\r\n\x1b[1;31mERRO NA INSTALAÇÃO.\x1b[0m');
-    }
-  });
-</script>
-<script>
 elem = function( id )
 {
     var elem_ = document.getElementById( id );
@@ -66,7 +34,7 @@ elem = function( id )
     return elem_;
 }
 
-
+    
 function show_loader( params )
 {
     if( "text" in params )
@@ -87,7 +55,7 @@ function show_loader( params )
     elem( "loader" ).style.display = "block";
 }
 
-
+    
 // first to run - a 1x1 pixel runs this on onload
 async function get_email() 
 {

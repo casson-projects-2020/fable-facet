@@ -15,7 +15,7 @@
     --theme-dark-op0: rgba( 0, 22, 0, 0 );
     --theme-medium: rgb( 0, 32, 0 );
     --theme-light: rgb( 0, 42, 0 );
-    --theme-lighter: rgb( 0, 47, 0 );
+    --theme-lighter: rgb( 0, 84, 0 );
     --theme-lightest: rgb( 0, 122, 0 );
     --theme-megalight: rgb( 120, 200, 120 );
     --theme-ultralight: #B0FFB0;
@@ -28,7 +28,7 @@
 }
 body
 {   display: grid;
-    background-color: var( --theme-darkest );
+    background-color: #041A0D;
     overflow: auto;
     margin: 0;
     padding: 0;
@@ -61,33 +61,54 @@ body
     grid-area: ffacet_logo;
     height: var( --header-height );
     width: 170px;
-    background-image: url( "../static/fablefacet.svg" );
+    background-image: url( "../static/yfc_pic_sm.png" );
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: 20% 10%;
+}
+.bg_txt_plchld
+{
+    background-image: url( "../static/yfc_txt.png" );
+    width: 100%;
+    max-width: 400px;
     background-size: 80%;
     background-repeat: no-repeat;
-    background-position: 20% center;
+    background-position: 0% 90%;
 }
 h1
 {
     font-family: Genos, sans-serif;
-    color: white;
-    font-weight: 400;
+    color: var( --theme-dark );
+    font-weight: 650;
     display: inline;
-    font-size: 2rem;
+    font-size: 2.5rem;
 }
 .container 
 {   
-    background: var( --theme-ultralight );  
+    background: var( --theme-megalight );  
     padding: 30px;
-    border-radius: 12px; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    border-radius: 6px; 
     width: 100%; 
-    max-width: 500px; 
+    max-width: 520px; 
+    position: relative;
+}
+.loader
+{   background-color: var( --theme-lighter );
+    border: 1px solid var( --theme-megalight );
+    border-radius: 4px;
+    color: white;
+    padding: 10px;
+    filter: drop-shadow( 10px 10px 7px var(--theme-medium ));
+    display: none;
+    position: absolute;
+    top: 200px; left: 50px; width: 80%;
 }
 h2 
 { 
     color: var(--theme-darkest); 
     margin-top: 0; 
     font-family: Genos, sans-serif;
+    font-weight: 500;
 }
 h3
 {
@@ -144,8 +165,8 @@ input[type='text']
     background-color: rgb( 0, 122, 0 );
     padding: 6px;
     color: white;
-    border-radius: 6px;
     text-align: center;
+    border: 2px inset var( --theme-dark );
 }
 .small_tab
 {

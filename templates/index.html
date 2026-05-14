@@ -72,7 +72,7 @@ async function get_email()
         email = await response.text();
         
         // if it is an error
-        if( in_( email, "Error:" ))
+        if( in_( email, "Error:" ) || in_( email, "error," ))
         {
             if( email.includes( "Fatal Error:" ) == false )
             {   email = "❌ Error: please click 'restart': " + email;

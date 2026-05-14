@@ -304,19 +304,19 @@ sleep 2
             cmd += f"Removing repo folder: {cwd}\nclear\n"
 
         if outp != "":
-            cmd += """) | dialog --cr-wrap --programbox "✅ Success: \ 
-Your-Fable-Cloud is installed. Get back to Fable Facet site to use it\n\n\
-this script created one bucket on Cloud Storage, and one Cloud Run Function.\n\
-If you want to uninstall it, see instructions on Fable Facet site site:\n\
-in Tech section, 'How to delete my account'\n\n\
-You can now close the browser tab and Cloud Shell and return to Fable Facet \
+            cmd += """) | dialog --cr-wrap --programbox "✅ Success: \\ 
+Your-Fable-Cloud is installed. Get back to Fable Facet site to use it\n\n\\
+this script created one bucket on Cloud Storage, and one Cloud Run Function.\n\\
+If you want to uninstall it, see instructions on Fable Facet site site:\n\\
+in Tech section, 'How to delete my account'\n\n\\
+You can now close the browser tab and Cloud Shell and return to Fable Facet \\
 site" 30 80 > /dev/tty
 """ 
         else:
-            cmd += """) | dialog --cr-wrap --programbox "❌ Fatal Error: \
-cannot install Your-Fable-Cloud.\n\n\
-If the error appears to be temporaty you may try to install again.\n\
-Close the browser tab and Cloud Shell and return to Fable Facet site\n\n\
+            cmd += """) | dialog --cr-wrap --programbox "❌ Fatal Error: \\
+cannot install Your-Fable-Cloud.\n\n\\
+If the error appears to be temporaty you may try to install again.\n\\
+Close the browser tab and Cloud Shell and return to Fable Facet site\n\n\\
 Please contact us." 30 80 > /dev/tty
 """ 
         subprocess.Popen( cmd, shell = True )

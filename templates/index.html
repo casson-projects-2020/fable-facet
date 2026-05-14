@@ -219,7 +219,13 @@ function run_installer()
         };
 
         eventSource.onerror = () => 
-        {   eventSource.close();
+        {   
+            if( eventSource.readyState === EventSource.CLOSED )
+                console.log( "Servidor encerrou a conexão (esperado)" );
+            else
+                console.error( "Erro real de conexão" );
+    
+            eventSource.close();
         };
         
         status.textContent = "✔ Success: Your-Fable-Cloud is installed.";

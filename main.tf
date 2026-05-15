@@ -48,7 +48,8 @@ locals {
   padding       = substr( "==", 0, local.padding_len )
   payload_ready = "${local.payload_raw}${local.padding}"
   decoded       = jsondecode( base64decode( local.payload_ready ))
-  sub           = local.decoded.sub 
+  sub           = local.decoded.sub
+  email         = local.decoded.email
 }
 
 locals {
@@ -127,7 +128,7 @@ depends_on = [
 
     environment_variables = {
       SUB = lower(trimspace(local.sub))
-      EMAIL = lower(trimspace(data.google_client_openid_userinfo.me.email))
+      EMAIL = lower(trimspace(email))
       CONFIG_BUCKET = "${var.project_id}-fable-data"
     }
   }

@@ -61,7 +61,7 @@ function show_loader( params )
 
 
 // first to run - a 1x1 pixel runs this on onload
-async function get_email() 
+get_email = async function() 
 {
     const email_box = elem( "target" );
     const status = elem( "status" );
@@ -104,7 +104,7 @@ async function get_email()
 }
 
 
-async function createProject() 
+createProject = async function() 
 {
     const projectName = elem( "new_project" ).value;
     const status = elem( "status" );
@@ -155,7 +155,7 @@ async function createProject()
 }
 
 
-async function selectProject() 
+selectProject = async function() 
 {
     projs = elem( "project_id" );
     const status = elem( "status" );
@@ -197,7 +197,7 @@ async function selectProject()
 }
 
 
-function run_installer()
+run_installer = function()
 {
     const status = elem( "status" );
     const restart = elem( "restart" );
@@ -210,61 +210,61 @@ function run_installer()
     {
         const eventSource = new EventSource( './run_installer' );
 
-        eventSource.onmessage = (event) => 
+        eventSource.onmessage = ( event ) => 
         {
             const panel = elem( 'terminal' );
             const newLine = document.createElement( 'div' );
             newLine.textContent = "> " + event.data;
             panel.appendChild( newLine );
             panel.scrollTop = panel.scrollHeight;
+            
+            if( event.data.includes( "internal_status:finished_error" )) 
+            {
+                newLine.style.color = "#1c1c1c";
+                status.textContent = "❌ Error: Your-Fable-Cloud is NOT installed.";
+                elem( "step3_text" ).textContent = "";
+                elem( "app_title").textContent = "Your-Fable-Cloud is NOT installed";
+                var msg = "<br>If you think the error is temporary you may try to install ";
+                msg += "again. Please contact us.";
+
+                show_loader({ text: status.textContent + msg, ok: true });
+                eventSource.close();
+                run_installer = null;
+            }
         };
 
         eventSource.onerror = () => 
         {   
-            if( eventSource.readyState === EventSource.CLOSED )
-                console.log( "Servidor encerrou a conexão (esperado)" );
+            const panel = elem( 'terminal' );
+
+            if( eventSource.readyState === EventSource.CONNECTING 
+                    || eventSource.readyState === EventSource.CLOSED ) 
+            {
+                if( !panel.textContent.includes( "internal_status:finished_error" ))
+                {
+                    status.textContent = "✔ Success: Your-Fable-Cloud is installed.";
+                    elem( "step3_text" ).textContent = "";
+                    elem( "app_title").textContent = "Your-Fable-Cloud is installed";
+                    var msg = "<br>You may close this tab and Cloud Shell and return to ";
+                    msg += "Fable Facet site to link (authorize) your email.";
+
+                    show_loader({ text: status.textContent + msg, ok: true });
+                    run_installer = null;
+                }
+            }
             else
-                console.error( "Erro real de conexão" );
+                throw new Error( "Terminal Connection Lost" );
     
             eventSource.close();
         };
-        
-        const res = elem( "terminal" ).textContent;
-
-        if( res.includes( "internal_status:finished_error" ) == false )
-        {
-            status.textContent = "✔ Success: Your-Fable-Cloud is installed.";
-            elem( "step3_text" ).textContent = "";
-            elem( "app_title").textContent = "Your-Fable-Cloud is installed";
-            var msg = "<br>You may close this tab and Cloud Shell and return to ";
-            msg += "Fable Facet site to link (authorize) your email.";
-
-            show_loader({ text: status.textContent + msg });
-        }
-        else
-        {
-            status.textContent = "❌ Error: Your-Fable-Cloud is NOT installed.";
-            elem( "step3_text" ).textContent = "";
-            elem( "app_title").textContent = "Your-Fable-Cloud is NOT installed";
-            var msg = "<br>If you think the error is temporary yoy may try to install ";
-            msg += "again. Please contact us.";
-
-            show_loader({ text: status.textContent + msg, ok: true });
-        }
     }
-    
-    // TODO: checar o bubble das exceções, pq este aqui seria o 3o link:
-    // roda acima, q roda o python, q roda o bash (q por sua vez roda o terraform,
-    // entao temos 4 niveis, mas o terraform faz rollback de si mesmo)
-    // uma excecao no yfc_install chega aqui? Existe essa possibilidade de
-    // restart abaixo? Informar o usuario q ele pode fechar tudo? Existe alguma 
-    // chance do diretorio do repo nao ser apagado?
     catch( err ) 
     {
+        // TODO: check_yfc.sh + how to use rollback.sh
         is_error = true;
-        status.textContent = "❌ Error: please click 'restart': " + data.error;
+        status.textContent = "❌ Error: YFC MAY have been installed: " + data.error;
         show_loader({ text: status.textContent, ok: true });
-        restart.style.display = "block";
+        restart.style.display = "none";
         status.style.display = "block";
     }
 }

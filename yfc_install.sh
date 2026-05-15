@@ -18,9 +18,20 @@ if gcloud storage buckets describe gs://${BUCKET_NAME} >/dev/null 2>&1; then
     echo "✅ Bucket already exists."
 else
     echo "📦 Criating bucket..."
-    gcloud storage buckets create gs://${BUCKET_NAME} --location=${REGION}
-    gcloud storage buckets update gs://${BUCKET_NAME} --versioning
+    if gcloud storage buckets create gs://${BUCKET_NAME} --location=${REGION}; then
+        gcloud storage buckets update gs://${BUCKET_NAME} --versioning
+    else
+        echo "❌ Fatal Error: cannot install Your-Fable-Cloud."
+        echo
+        echo "If the error appears to be temporaty you may try to install again."
+        echo "Close the browser tab and Google Cloud Shell and return to Fable Facet site."
+        echo
+        echo "Please contact us."
+
+        exit 1
+    fi
 fi
+
 
 cd function_code
 zip -r ../fablefacet.zip .

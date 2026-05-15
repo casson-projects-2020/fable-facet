@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-export INSTALL_STARTED=true
+export INSTALL_STARTED=1
 PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
 
 USER_EMAIL=$(gcloud config get-value account)

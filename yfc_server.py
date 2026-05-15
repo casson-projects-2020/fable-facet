@@ -38,8 +38,7 @@ def billing_problems( project_id ):
     # verifica se o projeto ja tem uma billing account
     result = subprocess.run(
         ['gcloud', 'billing', 'projects', 'describe', project_id, '--format=json' ],
-        stdout=sys.stdout,
-        stderr=sys.stderr
+        capture_output = True, text=True
     )
     print( "billing_problems", "'gcloud', 'billing', 'projects', 'describe', project_id, '--format=json'" )
     print( "result.stdout", result.stdout )
@@ -245,9 +244,7 @@ def get_email():
     try:
         result = subprocess.run(
             ['gcloud', 'config', 'get-value', 'account'],
-            capture_output = True,
-            text = True,
-            check = True
+            capture_output = True, text = True, check = True
         )
         
         print( "get_email", "'gcloud', 'config', 'get-value', 'account'" )

@@ -56,6 +56,7 @@ if terraform apply -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${
     echo "You can now close the browser tab and Google Cloud Shell and return to Fable Facet site"
 
 else
+    export INSTALL_CANCEL=1
     terraform destroy -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"
 
     echo "❌ Fatal Error: cannot install Your-Fable-Cloud."

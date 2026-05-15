@@ -75,7 +75,7 @@ body
     background-repeat: no-repeat;
     background-position: 0% 90%;
 }
-h1
+h1,#step3_text
 {
     font-family: Genos, sans-serif;
     color: var( --theme-dark );

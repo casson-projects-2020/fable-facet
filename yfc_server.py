@@ -354,7 +354,11 @@ Please contact us." 20 60 > /dev/tty && clear
         _thread.start_new_thread( kill_later, ())
 
 
-    return Response( generate( fatal_error ), mimetype='text/event-stream' )
+    return Response( generate( fatal_error ), mimetype = 'text/event-stream', headers = {
+        'Cache-Control': 'no-cache',
+        'X-Accel-Buffering': 'no',
+        'Connection': 'keep-alive'
+    })
 
 
 if __name__ == '__main__':

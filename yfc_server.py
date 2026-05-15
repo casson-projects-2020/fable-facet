@@ -37,11 +37,11 @@ def billing_problems( project_id ):
  
     # verifica se o projeto ja tem uma billing account
     result = subprocess.run(
-        ['gcloud', 'billing ', 'projects', 'describe', project_id, '--format=json' ],
+        ['gcloud', 'billing', 'projects', 'describe', project_id, '--format=json' ],
         stdout=sys.stdout,
         stderr=sys.stderr
     )
-    print( "billing_problems", "'gcloud', 'billing ', 'projects', 'describe', project_id, '--format=json'" )
+    print( "billing_problems", "'gcloud', 'billing', 'projects', 'describe', project_id, '--format=json'" )
     print( "result.stdout", result.stdout )
     billing = json.loads( result.stdout.strip())
     

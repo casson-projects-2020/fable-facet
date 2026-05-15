@@ -230,6 +230,9 @@ run_installer = function()
                 show_loader({ text: status.textContent + msg, ok: true });
                 eventSource.close();
                 run_installer = null;
+                selectProject = null;
+                createProject = null;
+                get_email  = null;
             }
         };
 
@@ -250,6 +253,9 @@ run_installer = function()
 
                     show_loader({ text: status.textContent + msg, ok: true });
                     run_installer = null;
+                    selectProject = null;
+                    createProject = null;
+                    get_email  = null;
                 }
             }
             else
@@ -266,6 +272,11 @@ run_installer = function()
         show_loader({ text: status.textContent, ok: true });
         restart.style.display = "none";
         status.style.display = "block";
+        
+        run_installer = null;
+        selectProject = null;
+        createProject = null;
+        get_email  = null;
     }
 }
 </script>

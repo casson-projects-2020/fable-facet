@@ -196,6 +196,7 @@ resource "null_resource" "registro_com_rollback" {
         cat response_body.txt
         echo -e "\n----------------------------------------------------------"
         export tf_error=1
+        sleep 2
         exit 1
       fi
 

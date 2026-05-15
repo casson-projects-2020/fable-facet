@@ -59,7 +59,7 @@ function show_loader( params )
     elem( "loader" ).style.display = "block";
 }
 
-    
+
 // first to run - a 1x1 pixel runs this on onload
 async function get_email() 
 {
@@ -204,6 +204,7 @@ function run_installer()
     restart.style.display = "none";
     status.style.display = "none";
 
+    elem( "step3" ).style.display = "block";
     var is_error = false;
     try 
     {
@@ -213,7 +214,7 @@ function run_installer()
         {
             const panel = elem( 'terminal' );
             const newLine = document.createElement( 'div' );
-            newLine.textContent = event.data;
+            newLine.textContent = "> " + event.data;
             panel.appendChild( newLine );
             panel.scrollTop = panel.scrollHeight;
         };
@@ -228,13 +229,28 @@ function run_installer()
             eventSource.close();
         };
         
-        status.textContent = "✔ Success: Your-Fable-Cloud is installed.";
-        elem( "step3_text" ).textContent = "";
-        elem( "app_title").textContent = "Your-Fable-Cloud is installed";
-        var msg = "<br>You may close this tab and Cloud Shell and return to ";
-        msg += "Fable Facet site to link (authorize) your email.";
+        const res = elem( "terminal" ).textContent;
 
-        show_loader({ text: status.textContent + msg });
+        if( res.includes( "internal_status:finished_error" ) == false )
+        {
+            status.textContent = "✔ Success: Your-Fable-Cloud is installed.";
+            elem( "step3_text" ).textContent = "";
+            elem( "app_title").textContent = "Your-Fable-Cloud is installed";
+            var msg = "<br>You may close this tab and Cloud Shell and return to ";
+            msg += "Fable Facet site to link (authorize) your email.";
+
+            show_loader({ text: status.textContent + msg });
+        }
+        else
+        {
+            status.textContent = "❌ Error: Your-Fable-Cloud is NOT installed.";
+            elem( "step3_text" ).textContent = "";
+            elem( "app_title").textContent = "Your-Fable-Cloud is NOT installed";
+            var msg = "<br>If you think the error is temporary yoy may try to install ";
+            msg += "again. Please contact us.";
+
+            show_loader({ text: status.textContent + msg, ok: true });
+        }
     }
     
     // TODO: checar o bubble das exceções, pq este aqui seria o 3o link:
@@ -350,7 +366,7 @@ function run_installer()
                 Installing Your-Fable-Cloud on the project...
             </div>
             <div 
-                id="terminal" style="width: 85%; height: 400px;">
+                id="terminal">
             </div>
         </div>
         <br/><br/>

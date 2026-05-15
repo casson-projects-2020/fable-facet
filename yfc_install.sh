@@ -32,7 +32,6 @@ else
     fi
 fi
 
-
 cd function_code
 zip -r ../fablefacet.zip .
 cd ..
@@ -66,3 +65,4 @@ else
     echo "Please contact us."
 
     exit 1
+fi

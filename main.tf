@@ -195,7 +195,7 @@ resource "null_resource" "registro_com_rollback" {
         echo "Probable cause:"
         cat response_body.txt
         echo -e "\n----------------------------------------------------------"
-        export tf_error=1
+        touch /tmp/tf_failed.flag
         sleep 2
         exit 1
       fi

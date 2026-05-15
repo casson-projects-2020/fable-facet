@@ -8,7 +8,6 @@ sudo apt install dialog
     fuser -k 8080/tcp > /dev/null 2>&1
 
     pip install --upgrade pip
-    pip install google-genai
 
     if pgrep -f "[y]fc_server.py" > /dev/null; then
         echo "server already running"

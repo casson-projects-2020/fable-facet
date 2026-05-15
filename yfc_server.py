@@ -41,7 +41,8 @@ def billing_problems( project_id ):
         stdout=sys.stdout,
         stderr=sys.stderr
     )
-debugger;
+    print( "billing_problems", "'gcloud', 'billing ', 'projects', 'describe', project_id, '--format=json'" )
+    print( "result.stdout", result.stdout )
     billing = json.loads( result.stdout.strip())
     
     if( billing[ "billingEnabled" ] != True ):
@@ -84,7 +85,10 @@ debugger;
 def set_project():
     data = request.json
     project_name_id = data.get( 'name_id' ).split( "(" )
-debugger;
+    
+    print( "set_project", "project_id = project_name_id[ 1 ].replace( ")", "" ).strip()" )
+    print( "project_name_id", project_name_id )
+
     project_id = project_name_id[ 1 ].replace( ")", "" ).strip()
 
     try:
@@ -208,7 +212,7 @@ def get_email():
     except Exception as e:
         err_ = f"Cannot run gcloud billing accounts list: {e.stderr}"
         print( err_, flush = True )
-        return f"❌ error, please click restart [{err_}]"
+        return f"? error, please click restart [{err_}]"
                     
         # Currencies that indicate that Gemini Free Tier is not provided
         restricted_currencies = [
@@ -240,18 +244,21 @@ def get_email():
     
     try:
         result = subprocess.run(
-            ["gcloud", "config", "get-value", "account"],
+            ['gcloud', 'config', 'get-value', 'account'],
             capture_output = True,
             text = True,
             check = True
         )
-debugger;
+        
+        print( "get_email", "'gcloud', 'config', 'get-value', 'account'" )
+        print( "result.stdout", result.stdout )
+
         return result.stdout.strip()
 
     except subprocess.CalledProcessError as e:
         err_ = f"Cannot run gcloud config get-value account: {e.stderr}"
         print( err_, flush = True )
-        return f"❌ error, please click restart [{err_}]"
+        return f"? error, please click restart [{err_}]"
 
 
 env = os.environ.copy()

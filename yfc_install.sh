@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-export INSTALL_STARTED=1
+touch /tmp/yfc_install.flag
 PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
 
 USER_EMAIL=$(gcloud config get-value account)
@@ -46,17 +46,10 @@ export TF_CLI_ARGS="-no-color"
 terraform init -reconfigure -backend-config="bucket=${BUCKET_NAME}" -backend-config="prefix=terraform/state"
 
 # check if terraform succeeded
-if terraform apply -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"; then
-    echo "✅ Success - Your-Fable-Cloud is installed. Get back to Fable Facet site to use it"
-    echo
-    echo "this script created one bucket on Cloud Storage, and one Cloud Run Function"
-    echo "If you want to uninstall it, see instructions on Fable Facet site site:"
-    echo "in Tech section, 'How to delete my account'"
-    echo
-    echo "You can now close the browser tab and Google Cloud Shell and return to Fable Facet site"
+rm -f /tmp/tf_failed.flag
+terraform apply -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"
 
-else
-    export INSTALL_CANCEL=1
+if [ $? -ne 0 ] || [ -f /tmp/tf_failed.flag ]; then
     terraform destroy -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"
 
     echo "❌ Fatal Error: cannot install Your-Fable-Cloud."
@@ -67,4 +60,12 @@ else
     echo "Please contact us."
 
     exit 1
+else
+    echo "✅ Success - Your-Fable-Cloud is installed. Get back to Fable Facet site to use it"
+    echo
+    echo "this script created one bucket on Cloud Storage, and one Cloud Run Function"
+    echo "If you want to uninstall it, see instructions on Fable Facet site site:"
+    echo "in Tech section, 'How to delete my account'"
+    echo
+    echo "You can now close the browser tab and Google Cloud Shell and return to Fable Facet site"
 fi

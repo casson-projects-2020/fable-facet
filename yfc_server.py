@@ -86,7 +86,7 @@ def set_project():
     data = request.json
     project_name_id = data.get( 'name_id' ).split( "(" )
     
-    print( "set_project", "project_id = project_name_id[ 1 ].replace( ")", "" ).strip()" )
+    print( "set_project", "project_id = project_name_id[ 1 ].replace( ')', '' ).strip()" )
     print( "project_name_id", project_name_id )
 
     project_id = project_name_id[ 1 ].replace( ")", "" ).strip()

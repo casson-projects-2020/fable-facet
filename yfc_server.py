@@ -41,6 +41,7 @@ def billing_problems( project_id ):
         stdout=sys.stdout,
         stderr=sys.stderr
     )
+debugger;
     billing = json.loads( result.stdout.strip())
     
     if( billing[ "billingEnabled" ] != True ):
@@ -83,6 +84,7 @@ def billing_problems( project_id ):
 def set_project():
     data = request.json
     project_name_id = data.get( 'name_id' ).split( "(" )
+debugger;
     project_id = project_name_id[ 1 ].replace( ")", "" ).strip()
 
     try:
@@ -243,6 +245,7 @@ def get_email():
             text = True,
             check = True
         )
+debugger;
         return result.stdout.strip()
 
     except subprocess.CalledProcessError as e:
@@ -280,7 +283,7 @@ def yfc_installer_run():
                   if not line and process.poll() is not None:
                       break
                   if line:
-                      yield f"data: {line.strip()}\n\n"
+                      yield f"data: {line}\n\n"
                         
                 process.wait()
 

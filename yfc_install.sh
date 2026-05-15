@@ -40,7 +40,8 @@ gcloud storage cp fablefacet.zip gs://${BUCKET_NAME}/source/fablefacet.zip
 echo "🛠️ Initing Terraform..."
 TOKEN=$(gcloud auth print-identity-token)
 export TF_IN_AUTOMATION=true
-export TF_INPUT=false
+export TF_INPUT=0
+export TF_CLI_ARGS="-no-color"
 
 terraform init -reconfigure -backend-config="bucket=${BUCKET_NAME}" -backend-config="prefix=terraform/state"
 

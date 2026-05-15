@@ -128,7 +128,7 @@ depends_on = [
 
     environment_variables = {
       SUB = lower(trimspace(local.sub))
-      EMAIL = lower(trimspace(email))
+      EMAIL = lower(trimspace(local.email))
       CONFIG_BUCKET = "${var.project_id}-fable-data"
     }
   }

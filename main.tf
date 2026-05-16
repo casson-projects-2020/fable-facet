@@ -144,12 +144,29 @@ depends_on = [
   }
 }
 
+resource "google_project_service_identity" "iap_sa" {
+  provider = google-beta
+  project  = var.project_id
+  service  = "iap.googleapis.com"
+}
+
 resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
   project = var.project_id
   location = var.region
   name = google_cloudfunctions2_function.function.name
   role   = "roles/run.invoker"
-  member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-iap.iam.gserviceaccount.com"
+  member   = "serviceAccount:${google_project_service_identity.iap_sa.email}"
+
+  depends_on = [google_project_service.iap_api]
+}
+
+resource "google_cloud_run_v2_service_iam_member" "group_iap_access" {
+  project  = var.project_id
+  location = var.region
+  name     = google_cloudfunctions2_function.function.name
+  
+  role     = "roles/iap.httpsResourceAccessor" 
+  member   = "group:iap-access-group@fablefacet.com"
 
   depends_on = [google_project_service.iap_api]
 }
@@ -179,7 +196,7 @@ resource "null_resource" "registro_com_rollback" {
         --iap \
         --project=${var.project_id}
 
-      export cf_url=${self.triggers.cf_url}
+      export cf_url="${self.triggers.cf_url}"
 
       echo "${data.google_service_account_id_token.cf_jwt.id_token}" > /tmp/debug_token.txt
 

@@ -155,7 +155,7 @@ resource "null_resource" "registro_com_rollback" {
     command = <<EOT
       gcloud run services update ${local.cf_name} \
         --region="us-central1" \
-        --iap=enabled \
+        --iap \
         --project=${var.project_id}
 
       export cf_url=${self.triggers.cf_url}

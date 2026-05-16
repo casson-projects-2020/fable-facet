@@ -84,7 +84,13 @@ resource "google_service_account" "function_sa" {
   display_name = "Service Account to Your-Fable-Cloud function"
 }
 
-resource "google_service_account_iam_member" "allow_impersonation" {
+resource "google_service_account_iam_member" "allow_openid_impersonation" {
+  service_account_id = google_service_account.function_sa.name
+  role               = "roles/iam.serviceAccountOpenIdTokenCreator"
+  member             = "user:${local.email}"
+}
+
+resource "google_service_account_iam_member" "allow_token_creation" {
   service_account_id = google_service_account.function_sa.name
   role               = "roles/iam.serviceAccountTokenCreator"
   member             = "user:${local.email}" 
@@ -155,7 +161,10 @@ resource "null_resource" "registro_com_rollback" {
     cf_url = google_cloudfunctions2_function.function.service_config[0].uri
   }
 
-  depends_on = [ google_cloudfunctions2_function.function ]
+  depends_on = [ google_cloudfunctions2_function.function,
+      google_service_account_iam_member.allow_openid_impersonation,
+      google_service_account_iam_member.allow_token_creation
+  ]
 
   provisioner "local-exec" {
     command = <<EOT

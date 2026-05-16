@@ -48,8 +48,9 @@ terraform init -reconfigure -backend-config="bucket=${BUCKET_NAME}" -backend-con
 # check if terraform succeeded
 rm -f /tmp/tf_failed.flag
 terraform apply -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"
+TF_EXIT_CODE=$?
 
-if [ $? -ne 0 ] || [ -f /tmp/tf_failed.flag ]; then
+if [ TF_EXIT_CODE -ne 0 ] || [ -f /tmp/tf_failed.flag ]; then
     terraform destroy -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"
 
     echo "❌ Fatal Error: cannot install Your-Fable-Cloud."

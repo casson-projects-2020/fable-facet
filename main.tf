@@ -166,9 +166,20 @@ resource "null_resource" "registro_com_rollback" {
 
       export cf_url=${self.triggers.cf_url}
 
-      TOKEN=$(gcloud auth print-identity-token \
-                --impersonate-service-account="${google_service_account.function_sa.email}" \
-                --audiences="${self.triggers.cf_url}")
+      SA_ACCESS_TOKEN=$(gcloud auth print-access-token \
+                        --impersonate-service-account="${google_service_account.function_sa.email}")
+
+      #TOKEN=$(gcloud auth print-identity-token \
+      #          --impersonate-service-account="${google_service_account.function_sa.email}" \
+      #          --audiences="${self.triggers.cf_url}")
+
+      TOKEN=$(curl -s -X POST "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${google_service_account.function_sa.email}:generateIdToken" \
+      -H "Authorization: Bearer $SA_ACCESS_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"audience\": \"${self.triggers.cf_url}\",
+        \"includeEmail\": true
+      }" | grep -o '"idToken": "[^"]*' | grep -o '[^"]*$')
 
       echo "Registering Your-Fable-Cloud with Fable Facet..."
 

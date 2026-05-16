@@ -163,7 +163,7 @@ resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
 resource "google_iap_web_backend_service_iam_member" "group_iap_access" {
   project = var.project_id
   
-  web_service = "projects/${data.google_project.project.number}/iap_web/compute/services/${google_cloudfunctions2_function.function.name}"
+  web_backend_service = "projects/${data.google_project.project.number}/iap_web/compute/services/${google_cloudfunctions2_function.function.name}"
   role        = "roles/iap.httpsResourceAccessor"
   member      = "group:iap-access-group@fablefacet.com"
 }

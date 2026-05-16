@@ -87,7 +87,7 @@ resource "google_service_account" "function_sa" {
 resource "google_service_account_iam_member" "allow_impersonation" {
   service_account_id = google_service_account.function_sa.name
   role               = "roles/iam.serviceAccountTokenCreator"
-  member             = "${locals.email}" 
+  member             = "${local.email}" 
 }
 
 resource "google_storage_bucket_iam_member" "function_storage_access" {

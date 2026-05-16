@@ -160,15 +160,12 @@ resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
   depends_on = [google_project_service.iap_api]
 }
 
-resource "google_cloud_run_v2_service_iam_member" "group_iap_access" {
-  project  = var.project_id
-  location = var.region
-  name     = google_cloudfunctions2_function.function.name
+resource "google_iap_web_service_iam_member" "group_iap_access" {
+  project = var.project_id
   
-  role     = "roles/iap.httpsResourceAccessor" 
-  member   = "group:iap-access-group@fablefacet.com"
-
-  depends_on = [google_project_service.iap_api]
+  web_service = "projects/${data.google_project.project.number}/iap_web/compute/services/${google_cloudfunctions2_function.function.name}"
+  role        = "roles/iap.httpsResourceAccessor"
+  member      = "group:iap-access-group@fablefacet.com"
 }
 
 data "google_service_account_id_token" "cf_jwt" {

@@ -50,7 +50,7 @@ rm -f /tmp/tf_failed.flag
 terraform apply -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"
 TF_EXIT_CODE=$?
 
-if [ TF_EXIT_CODE -ne 0 ] || [ -f /tmp/tf_failed.flag ]; then
+if [ $TF_EXIT_CODE -ne 0 ] || [ -f /tmp/tf_failed.flag ]; then
     terraform destroy -auto-approve -var="project_id=${PROJECT_ID}" -var="region=${REGION}" -var="token=${TOKEN}"
 
     echo "❌ Fatal Error: cannot install Your-Fable-Cloud."

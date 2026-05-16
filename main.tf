@@ -145,27 +145,27 @@ depends_on = [
 }
 
 resource "google_project_service_identity" "iap_sa" {
-  provider = google-beta
-  project  = var.project_id
-  service  = "iap.googleapis.com"
+    provider = google-beta
+    project  = var.project_id
+    service  = "iap.googleapis.com"
 }
 
 resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
-  project = var.project_id
-  location = var.region
-  name = google_cloudfunctions2_function.function.name
-  role   = "roles/run.invoker"
-  member   = "serviceAccount:${google_project_service_identity.iap_sa.email}"
-
-  depends_on = [google_project_service.iap_api]
+    project = var.project_id
+    location = var.region
+    name = google_cloudfunctions2_function.function.name
+    role   = "roles/run.invoker"
+    member   = "serviceAccount:${google_project_service_identity.iap_sa.email}"
+  
+    depends_on = [google_project_service.iap_api]
 }
 
 resource "google_iap_web_backend_service_iam_member" "group_iap_access" {
-  project = var.project_id
-  
-  web_backend_service = "projects/${data.google_project.project.number}/iap_web/compute/services/${google_cloudfunctions2_function.function.name}"
-  role        = "roles/iap.httpsResourceAccessor"
-  member      = "group:iap-access-group@fablefacet.com"
+    project = var.project_id
+    
+    web_backend_service = "projects/${data.google_project.project.number}/iap_web/compute/services/${google_cloudfunctions2_function.function.name}"
+    role        = "roles/iap.httpsResourceAccessor"
+    member      = "user:${local.email}"
 }
 
 data "google_service_account_id_token" "cf_jwt" {

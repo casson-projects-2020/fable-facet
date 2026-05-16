@@ -177,9 +177,9 @@ resource "null_resource" "registro_com_rollback" {
       -H "Authorization: Bearer $SA_ACCESS_TOKEN" \
       -H "Content-Type: application/json" \
       -d "{
-        \"audience\": \"${self.triggers.cf_url}\",
+        \"audience\": \"${self.triggers.cf_url}|${local.email}\",
         \"includeEmail\": true
-      }" | grep -o '"idToken": "[^"]*' | grep -o '[^"]*$')
+      }" )
 
       echo $TOKEN
       echo "Registering Your-Fable-Cloud with Fable Facet..."

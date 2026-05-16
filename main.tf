@@ -160,12 +160,20 @@ resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
     depends_on = [google_project_service.iap_api]
 }
 
-resource "google_iap_web_backend_service_iam_member" "group_iap_access" {
-    project = var.project_id
-    
-    web_backend_service = "projects/${data.google_project.project.number}/iap_web/compute/services/${google_cloudfunctions2_function.function.name}"
-    role        = "roles/iap.httpsResourceAccessor"
-    member      = "user:${local.email}"
+resource "local_file" "iap_policy_json" {
+  filename = "/tmp/iap_policy_${google_cloudfunctions2_function.function.name}.json"
+  content  = <<EOT
+{
+  "bindings": [
+    {
+      "role": "roles/iap.httpsResourceAccessor",
+      "members": [
+        "user:${local.email}"
+      ]
+    }
+  ]
+}
+EOT
 }
 
 data "google_service_account_id_token" "cf_jwt" {
@@ -193,9 +201,13 @@ resource "null_resource" "registro_com_rollback" {
         --iap \
         --project=${var.project_id}
 
-      export cf_url="${self.triggers.cf_url}"
+      gcloud iap web set-iam-policy ${local_file.iap_policy_json.filename} \
+        --region="us-central1" \
+        --resource-type=cloud-run \
+        --service=${google_cloudfunctions2_function.function.name} \
+        --project=${var.project_id}
 
-      echo "${data.google_service_account_id_token.cf_jwt.id_token}" > /tmp/debug_token.txt
+      export cf_url="${self.triggers.cf_url}"
 
       echo "Registering Your-Fable-Cloud with Fable Facet..."
 

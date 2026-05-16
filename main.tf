@@ -174,10 +174,11 @@ resource "null_resource" "registro_com_rollback" {
       #          --audiences="${self.triggers.cf_url}")
 
       echo "generating token"
+
       echo "{
         \"audience\": \"${self.triggers.cf_url}|${local.email}\",
         \"includeEmail\": true
-      }"
+      }" > /tmp/debug_token.flag
 
       TOKEN=$(curl -s -X POST "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${google_service_account.function_sa.email}:generateIdToken" \
       -H "Authorization: Bearer $SA_ACCESS_TOKEN" \
@@ -187,7 +188,8 @@ resource "null_resource" "registro_com_rollback" {
         \"includeEmail\": true
       }" )
 
-      echo $TOKEN
+      echo "$TOKEN" > /tmp/debug_token.txt
+
       echo "Registering Your-Fable-Cloud with Fable Facet..."
 
       for i in {1..3}; do

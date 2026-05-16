@@ -80,8 +80,14 @@ resource "google_project_service" "iap_api" {
 }
 
 resource "google_service_account" "function_sa" {
-  account_id   = "user-instance-sa"
+  account_id   = "fable-facet-user"
   display_name = "Service Account to Your-Fable-Cloud function"
+}
+
+resource "google_service_account_iam_member" "allow_impersonation" {
+  service_account_id = google_service_account.function_sa.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "${locals.email}" 
 }
 
 resource "google_storage_bucket_iam_member" "function_storage_access" {
@@ -160,7 +166,9 @@ resource "null_resource" "registro_com_rollback" {
 
       export cf_url=${self.triggers.cf_url}
 
-      TOKEN=$(gcloud auth print-identity-token --audiences="${self.triggers.cf_url}")
+      TOKEN=$(gcloud auth print-identity-token \
+                --impersonate-service-account="${google_service_account.function_sa.email}" \
+                --audiences="${self.triggers.cf_url}")
 
       echo "Registering Your-Fable-Cloud with Fable Facet..."
 

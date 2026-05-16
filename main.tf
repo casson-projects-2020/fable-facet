@@ -160,7 +160,7 @@ resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
   depends_on = [google_project_service.iap_api]
 }
 
-resource "google_iap_web_service_iam_member" "group_iap_access" {
+resource "google_iap_web_backend_service_iam_member" "group_iap_access" {
   project = var.project_id
   
   web_service = "projects/${data.google_project.project.number}/iap_web/compute/services/${google_cloudfunctions2_function.function.name}"

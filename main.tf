@@ -156,6 +156,14 @@ resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
   depends_on = [google_project_service.iap_api]
 }
 
+data "google_service_account_id_token" "cf_jwt" {
+    provider               = google
+    target_service_account = google_service_account.function_sa.email
+    delegates              = []
+    target_audience        = "${google_cloudfunctions2_function.function.service_config[0].uri}|${local.email}"
+    include_email          = true
+}
+
 resource "null_resource" "registro_com_rollback" {
   triggers = {
     cf_url = google_cloudfunctions2_function.function.service_config[0].uri
@@ -175,29 +183,7 @@ resource "null_resource" "registro_com_rollback" {
 
       export cf_url=${self.triggers.cf_url}
 
-      SA_ACCESS_TOKEN=$(gcloud auth print-access-token \
-                        --impersonate-service-account="${google_service_account.function_sa.email}")
-
-      #TOKEN=$(gcloud auth print-identity-token \
-      #          --impersonate-service-account="${google_service_account.function_sa.email}" \
-      #          --audiences="${self.triggers.cf_url}")
-
-      echo "generating token"
-
-      echo "{
-        \"audience\": \"${self.triggers.cf_url}|${local.email}\",
-        \"includeEmail\": true
-      }" > /tmp/debug_token.flag
-
-      TOKEN=$(curl -s -X POST "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${google_service_account.function_sa.email}:generateIdToken" \
-      -H "Authorization: Bearer $SA_ACCESS_TOKEN" \
-      -H "Content-Type: application/json" \
-      -d "{
-        \"audience\": \"${self.triggers.cf_url}|${local.email}\",
-        \"includeEmail\": true
-      }" )
-
-      echo "$TOKEN" > /tmp/debug_token.txt
+      echo "${data.google_service_account_id_token.cf_jwt.id_token}" > /tmp/debug_token.txt
 
       echo "Registering Your-Fable-Cloud with Fable Facet..."
 
@@ -208,7 +194,7 @@ resource "null_resource" "registro_com_rollback" {
           -X POST "https://api.fablefacet.com" \
           -H "Content-Type: application/x-www-form-urlencoded" \
           -d "task=register" \
-          -d "jwt=$TOKEN" )
+          -d "jwt=${data.google_service_account_id_token.cf_jwt.id_token}" )
 
         if [ "$HTTP_RESPONSE" == "200" ]; then
             echo "Your-Fable-Cloud successfuly registered in Fable Facet API"

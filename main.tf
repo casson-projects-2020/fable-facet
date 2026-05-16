@@ -181,6 +181,7 @@ resource "null_resource" "registro_com_rollback" {
         \"includeEmail\": true
       }" | grep -o '"idToken": "[^"]*' | grep -o '[^"]*$')
 
+      echo $TOKEN
       echo "Registering Your-Fable-Cloud with Fable Facet..."
 
       for i in {1..3}; do

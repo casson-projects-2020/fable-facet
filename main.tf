@@ -160,7 +160,7 @@ resource "null_resource" "registro_com_rollback" {
 
       export cf_url=${self.triggers.cf_url}
 
-      TOKEN=$(gcloud auth print-identity-token --audiences='${self.triggers.cf_url}')
+      TOKEN=$(gcloud auth print-identity-token --audiences="${self.triggers.cf_url}")
 
       echo "Registering Your-Fable-Cloud with Fable Facet..."
 
@@ -178,7 +178,9 @@ resource "null_resource" "registro_com_rollback" {
             break
         else
             echo "Register failure (HTTP $HTTP_RESPONSE). Retrying in $((i * 5))s..."
-            sleep $((i * 5))
+            if [ "$i" != "3" ]; then
+                sleep $((i * 5))
+            fi
         fi
         
         if [ "$i" == "3" ]; then

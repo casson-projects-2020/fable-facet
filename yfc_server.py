@@ -325,7 +325,7 @@ sleep 2
             
             cmd += f"Removing repo folder: {cwd}\nclear\n"
 
-        if outp != "":
+        if outp == "":
             cmd += """) | dialog --cr-wrap --msgbox "Success: 
 Your-Fable-Cloud is installed. Get back to Fable Facet site to use it\n\n
 this script created one bucket on Cloud Storage, and one Cloud Run Function.\n

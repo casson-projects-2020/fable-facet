@@ -217,5 +217,5 @@ input[type='text']
     overflow-x: hidden;
     overflow-y: auto;
     line-height: 1.5;
-    border-left: 3px solid #0078d4;
+    border-left: 3px solid rgb( 0, 122, 0 );
 }

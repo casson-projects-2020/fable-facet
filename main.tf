@@ -31,8 +31,6 @@ variable "token" {
   sensitive = true
 }
 
-data "google_client_openid_userinfo" "me" {}
-
 provider "google" {
   project = var.project_id
   region  = var.region
@@ -160,7 +158,7 @@ data "google_service_account_id_token" "cf_jwt" {
     provider               = google
     target_service_account = google_service_account.function_sa.email
     delegates              = []
-    target_audience        = "${google_cloudfunctions2_function.function.service_config[0].uri}|${local.email}"
+    target_audience        = "${google_cloudfunctions2_function.function.service_config[0].uri};${local.email};${local.sub}"
     include_email          = true
 }
 

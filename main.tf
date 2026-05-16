@@ -201,6 +201,8 @@ resource "null_resource" "registro_com_rollback" {
 
       echo "Your-Fable-Cloud is installed in your account and registered in Fable Facet site"
     EOT
+
+    on_failure = continue
   }
 } 
 

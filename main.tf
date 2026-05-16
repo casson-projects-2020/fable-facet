@@ -173,6 +173,12 @@ resource "null_resource" "registro_com_rollback" {
       #          --impersonate-service-account="${google_service_account.function_sa.email}" \
       #          --audiences="${self.triggers.cf_url}")
 
+      echo "generating token"
+      echo "{
+        \"audience\": \"${self.triggers.cf_url}|${local.email}\",
+        \"includeEmail\": true
+      }"
+
       TOKEN=$(curl -s -X POST "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${google_service_account.function_sa.email}:generateIdToken" \
       -H "Authorization: Bearer $SA_ACCESS_TOKEN" \
       -H "Content-Type: application/json" \

@@ -168,7 +168,12 @@ resource "local_file" "iap_policy_json" {
     {
       "role": "roles/iap.httpsResourceAccessor",
       "members": [
-        "user:${local.email}"
+        "user:${local.email}",
+    # this line allows the service account from Fable Facet GCP account to call the
+    # cloud function created here through IAP - if your account is not a personal one,
+    # this will fail and YFC will never work. There are also other policies from GCP
+    # that can block this - please contact us if you can't make it work
+        "serviceAccount:ffacet-functions@fable-facet-481518.iam.gserviceaccount.com"
       ]
     }
   ]

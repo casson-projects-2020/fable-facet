@@ -161,7 +161,7 @@ resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
 }
 
 resource "local_file" "iap_policy_json" {
-  filename = "/tmp/iap_policy_${google_cloudfunctions2_function.function.name}.json"
+  filename = "/tmp/iap_policy_yfc.json"
   content  = <<EOT
 {
   "bindings": [

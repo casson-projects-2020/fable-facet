@@ -100,6 +100,12 @@ resource "google_storage_bucket_iam_member" "function_storage_access" {
   member = "serviceAccount:${google_service_account.function_sa.email}"
 }
 
+resource "google_project_iam_member" "logging_viewer" {
+  project = var.project_id
+  role    = "roles/logging.viewer"
+  member  = "serviceAccount:${google_service_account.function_sa.email}"
+}
+
 resource "random_id" "suffix" {
   byte_length = 5
 }

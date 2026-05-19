@@ -89,10 +89,22 @@ resource "google_service_account_iam_member" "allow_openid_impersonation" {
   member             = "user:${local.email}"
 }
 
+resource "google_service_account_iam_member" "allow_openid_impersonation" {
+  service_account_id = google_service_account.function_sa.name
+  role               = "roles/iam.serviceAccountOpenIdTokenCreator"
+  member             = "serviceAccount:${google_service_account.function_sa.email}"
+}
+
 resource "google_service_account_iam_member" "allow_token_creation" {
   service_account_id = google_service_account.function_sa.name
   role               = "roles/iam.serviceAccountTokenCreator"
   member             = "user:${local.email}" 
+}
+
+resource "google_service_account_iam_member" "allow_token_creation" {
+  service_account_id = google_service_account.function_sa.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${google_service_account.function_sa.email}" 
 }
 
 resource "google_storage_bucket_iam_member" "function_storage_access" {

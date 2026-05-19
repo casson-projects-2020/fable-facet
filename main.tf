@@ -58,7 +58,8 @@ locals {
     "cloudfunctions.googleapis.com",
     "cloudbuild.googleapis.com",
     "artifactregistry.googleapis.com",
-    "generativelanguage.googleapis.com"
+    "generativelanguage.googleapis.com",
+    "people.googleapis.com"
   ]
 }
 

@@ -119,6 +119,12 @@ resource "google_project_iam_member" "logging_viewer" {
   member  = "serviceAccount:${google_service_account.function_sa.email}"
 }
 
+resource "google_project_iam_member" "cf_log_writer" {
+  project = var.project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.function_sa.email}"
+}
+
 resource "random_id" "suffix" {
   byte_length = 5
 }

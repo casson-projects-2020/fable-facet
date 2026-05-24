@@ -125,6 +125,25 @@ resource "google_project_iam_member" "cf_log_writer" {
   member  = "serviceAccount:${google_service_account.function_sa.email}"
 }
 
+resource "google_project_iam_custom_role" "api_key_reader" {
+  role_id     = "api_key_string_reader"
+  title       = "API Key String Reader"
+  description = "allow list and extract the API keys, without adding admin rights (to read Gemini API Key)"
+  stage       = "GA"
+
+  permissions = [
+    "apikeys.keys.list",
+    "apikeys.keys.get",
+    "apikeys.keys.getKeyString"
+  ]
+}
+
+resource "google_project_iam_member" "cf_role_binding" {
+  project = var.project_id
+  role    = google_project_iam_custom_role.api_key_reader.id
+  member  = "serviceAccount:${google_service_account.function_sa.email}"
+}
+
 resource "random_id" "suffix" {
   byte_length = 5
 }

@@ -146,7 +146,7 @@ resource "google_project_iam_member" "cf_role_binding" {
 
 resource "google_project_iam_member" "project_viewer" {
   project = var.project_id
-  role    = "roles/resourcemanager.projectViewer"
+  role    = "roles/osconfig.projectFeatureSettingsViewer"
   member  = "serviceAccount:${google_service_account.function_sa.email}"
 }
 

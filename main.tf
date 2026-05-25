@@ -144,12 +144,6 @@ resource "google_project_iam_member" "cf_role_binding" {
   member  = "serviceAccount:${google_service_account.function_sa.email}"
 }
 
-resource "google_project_iam_member" "project_viewer" {
-  project = var.project_id
-  role    = "roles/osconfig.projectFeatureSettingsViewer"
-  member  = "serviceAccount:${google_service_account.function_sa.email}"
-}
-
 resource "random_id" "suffix" {
   byte_length = 5
 }
@@ -190,24 +184,26 @@ depends_on = [
       SUB = lower(trimspace(local.sub))
       EMAIL = lower(trimspace(local.email))
       CONFIG_BUCKET = "${var.project_id}-fable-data"
+      GCP_PROJECT = "${var.project_id}"
+      GCP_PROJECT_NAME = data.google_project.project.name
     }
   }
 }
 
 resource "google_project_service_identity" "iap_sa" {
-    provider = google-beta
-    project  = var.project_id
-    service  = "iap.googleapis.com"
+  provider = google-beta
+  project  = var.project_id
+  service  = "iap.googleapis.com"
 }
 
 resource "google_cloud_run_v2_service_iam_member" "iap_invoker" {
-    project = var.project_id
-    location = var.region
-    name = google_cloudfunctions2_function.function.name
-    role   = "roles/run.invoker"
-    member   = "serviceAccount:${google_project_service_identity.iap_sa.email}"
-  
-    depends_on = [google_project_service.iap_api]
+  project = var.project_id
+  location = var.region
+  name = google_cloudfunctions2_function.function.name
+  role   = "roles/run.invoker"
+  member   = "serviceAccount:${google_project_service_identity.iap_sa.email}"
+
+  depends_on = [google_project_service.iap_api]
 }
 
 resource "local_file" "iap_policy_json" {

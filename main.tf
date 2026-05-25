@@ -144,6 +144,12 @@ resource "google_project_iam_member" "cf_role_binding" {
   member  = "serviceAccount:${google_service_account.function_sa.email}"
 }
 
+resource "google_project_iam_member" "project_viewer" {
+  project = var.project_id
+  role    = "roles/resourcemanager.projectViewer"
+  member  = "serviceAccount:${google_service_account.function_sa.email}"
+}
+
 resource "random_id" "suffix" {
   byte_length = 5
 }

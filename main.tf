@@ -135,7 +135,7 @@ resource "google_project_iam_member" "cf_role_binding" {
 }
 
 resource "google_apikeys_key" "meta_key" {
-  name = "meta-key"
+  name = "fable-facet-meta-key"
   display_name = "Fable Facet key - don't erase"
 
   restrictions {

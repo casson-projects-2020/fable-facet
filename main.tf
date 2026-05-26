@@ -59,7 +59,8 @@ locals {
     "cloudbuild.googleapis.com",
     "artifactregistry.googleapis.com",
     "generativelanguage.googleapis.com",
-    "people.googleapis.com"
+    "people.googleapis.com",
+    "apikeys.googleapis.com"
   ]
 }
 
@@ -113,35 +114,40 @@ resource "google_storage_bucket_iam_member" "function_storage_access" {
   member = "serviceAccount:${google_service_account.function_sa.email}"
 }
 
-resource "google_project_iam_member" "logging_viewer" {
-  project = var.project_id
-  role    = "roles/logging.viewer"
-  member  = "serviceAccount:${google_service_account.function_sa.email}"
-}
-
-resource "google_project_iam_member" "cf_log_writer" {
-  project = var.project_id
-  role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${google_service_account.function_sa.email}"
-}
-
-resource "google_project_iam_custom_role" "api_key_reader" {
-  role_id     = "api_key_string_reader"
-  title       = "API Key String Reader"
-  description = "allow list and extract the API keys, without adding admin rights (to read Gemini API Key)"
+resource "google_project_iam_custom_role" "api_key_ops" {
+  role_id     = "api_key_string_ops"
+  title       = "API Key String ops"
+  description = "allow API keys operations, without adding admin rights"
   stage       = "GA"
 
   permissions = [
     "apikeys.keys.list",
     "apikeys.keys.get",
+    "apikeys.keys.update",
     "apikeys.keys.getKeyString"
   ]
 }
 
 resource "google_project_iam_member" "cf_role_binding" {
   project = var.project_id
-  role    = google_project_iam_custom_role.api_key_reader.id
+  role    = google_project_iam_custom_role.api_key_ops.id
   member  = "serviceAccount:${google_service_account.function_sa.email}"
+}
+
+resource "google_apikeys_key" "meta_key" {
+  name = "meta-key"
+  display_name = "Fable Facet key - don't erase"
+
+  restrictions {
+    api_targets {
+      service = "translate.googleapis.com"  # dummy restriction for security reasons
+      methods = "[GET*]"
+    }
+
+    browser_key_restrictions {
+      allowed_referrers = ["https://fablefacet.com*"]
+    }
+  }
 }
 
 resource "random_id" "suffix" {

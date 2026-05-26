@@ -140,7 +140,7 @@ resource "google_apikeys_key" "meta_key" {
 
   restrictions {
     api_targets {
-      service = "translate.googleapis.com"  # dummy restriction for security reasons
+      service = "people.googleapis.com"  # dummy restriction for security reasons
       methods = "[GET*]"
     }
 

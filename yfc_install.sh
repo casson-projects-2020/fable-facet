@@ -16,10 +16,11 @@ echo "🚀 Starting install on project: $PROJECT_ID"
 
 if gcloud storage buckets describe gs://${BUCKET_NAME} >/dev/null 2>&1; then
     echo "✅ Bucket already exists."
+    gcloud storage buckets update gs://${BUCKET_NAME} --versioning --update-labels=storage-for=fablefacet
 else
     echo "📦 Criating bucket..."
     if gcloud storage buckets create gs://${BUCKET_NAME} --location=${REGION}; then
-        gcloud storage buckets update gs://${BUCKET_NAME} --versioning
+        gcloud storage buckets update gs://${BUCKET_NAME} --versioning --update-labels=storage-for=fablefacet
     else
         echo "❌ Fatal Error: cannot install Your-Fable-Cloud."
         echo

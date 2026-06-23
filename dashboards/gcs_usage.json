@@ -92,6 +92,27 @@
                     }
                 }
             }
+        },{
+            "yPos": 16,
+            "xPos": 16,
+            "height": 8,
+            "width": 17,
+            "widget": 
+            {   "title": "Do not change this dashboard",
+                "text": 
+                {   "content": "Please do not change this Dashboard, as Fable Facet site uses it and cannot restore it automatically back to this configuration. \r\n\r\nThe site may be unable to edit texts if this dashboard is modified. ",
+                    "format": "MARKDOWN",
+                    "style": 
+                    {   "backgroundColor": "#FFFFFF",
+                        "fontSize": "FS_LARGE",
+                        "horizontalAlignment": "H_LEFT",
+                        "padding": "P_EXTRA_SMALL",
+                        "pointerLocation": "POINTER_LOCATION_UNSPECIFIED",
+                        "textColor": "#212121",
+                        "verticalAlignment": "V_TOP"
+                    }
+                }
+            }
         }]
     }
 }

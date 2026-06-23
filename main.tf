@@ -102,6 +102,12 @@ resource "google_service_account_iam_member" "allow_token_creation" {
   member             = "user:${local.email}" 
 }
 
+resource "google_project_iam_member" "function_monitoring_editor" {
+  project = var.project_id
+  role    = "roles/monitoring.dashboardEditor"
+  member  = "serviceAccount:${google_service_account.function_sa.email}"
+}
+
 resource "google_service_account_iam_member" "allow_token_creation" {
   service_account_id = google_service_account.function_sa.name
   role               = "roles/iam.serviceAccountTokenCreator"
@@ -310,5 +316,4 @@ resource "null_resource" "registro_com_rollback" {
 
     on_failure = continue
   }
-} 
-
+}

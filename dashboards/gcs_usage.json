@@ -1,0 +1,97 @@
+{
+    "displayName": "Fable Facet GCS Storage use",
+    "dashboardFilters": [],
+    "description": "",
+    "labels": 
+    {   "dashboard_storage_for": "fablefacet"   },
+    "mosaicLayout": 
+    {   "columns": 48,
+        "tiles": 
+        [{
+            "height": 16,
+            "width": 16,
+            "widget": 
+            {   "title": "Fable Facet GCS Class A Ops (lim 5.000) {date_placeholder}",   "id": "",
+                "scorecard": 
+                {   "breakdowns": [],
+                    "dimensions": [],
+                    "gaugeView": 
+                    {   "lowerBound": 0,
+                        "upperBound": 5000
+                    },
+                    "measures": [],
+                    "thresholds": [],
+                    "timeSeriesQuery": 
+                    {   "outputFullDuration": true,
+                        "timeSeriesFilter": 
+                        {   "aggregation": 
+                            {   "alignmentPeriod": "{to_the_start_of_the_month}",
+                                "crossSeriesReducer": "REDUCE_SUM",
+                                "groupByFields": [],
+                                "perSeriesAligner": "ALIGN_SUM"
+                            },
+                            "filter": "metric.type=\"storage.googleapis.com/api/request_count\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"{bucket_name}\" metric.label.\"method\"=\"WriteObject\""
+                        },
+                        "unitOverride": ""
+                    }
+                }
+            }
+        },{
+            "xPos": 16,
+            "height": 16,
+            "width": 17,
+            "widget": 
+            {   "title": "Fable Facet GCS Class B Ops (lim 50.000) {date_placeholder}",   "id": "",
+                "scorecard": 
+                {   "breakdowns": [],
+                    "dimensions": [],
+                    "gaugeView": 
+                    {   "lowerBound": 0,
+                        "upperBound": 50000
+                    },
+                    "measures": [],
+                    "thresholds": [],
+                    "timeSeriesQuery": 
+                    {   "outputFullDuration": true,
+                        "timeSeriesFilter": 
+                        {   "aggregation": 
+                            {   "alignmentPeriod": "1897980s",
+                                "crossSeriesReducer": "REDUCE_SUM",
+                                "groupByFields": [],
+                                "perSeriesAligner": "ALIGN_SUM"
+                            },
+                            "filter": "metric.type=\"storage.googleapis.com/api/request_count\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"{bucket_name}\" metric.label.\"method\"=monitoring.regex.full_match(\"(ReadObject|ListObjects)\")"
+                        },
+                        "unitOverride": ""
+                    }
+                }
+            }
+        },{
+            "yPos": 16,
+            "height": 8,
+            "width": 16,
+            "widget": 
+            {   "title": "FF storage - Free Tier Limit is 20GiB",
+                "scorecard": 
+                {   "gaugeView": 
+                    {   "lowerBound": 0,
+                        "upperBound": 1
+                    },
+                    "thresholds": [],
+                    "timeSeriesQuery": 
+                    {   "outputFullDuration": true,
+                        "timeSeriesFilter": 
+                        {   "aggregation": 
+                            {   "alignmentPeriod": "60s",
+                                "crossSeriesReducer": "REDUCE_SUM",
+                                "groupByFields": [],
+                                "perSeriesAligner": "ALIGN_MEAN"
+                            },
+                            "filter": "metric.type=\"storage.googleapis.com/storage/total_bytes\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"{bucket_name}\""
+                        }
+                    }
+                }
+            }
+        }]
+    }
+}

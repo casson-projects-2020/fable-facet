@@ -14,6 +14,9 @@ BUCKET_NAME="${PROJECT_ID}-fable-data"
 
 echo "🚀 Starting install on project: $PROJECT_ID"
 
+# to create the monitoring dashboards
+gcloud services enable monitoring.googleapis.com
+
 if gcloud storage buckets describe gs://${BUCKET_NAME} >/dev/null 2>&1; then
     echo "✅ Bucket already exists."
     gcloud storage buckets update gs://${BUCKET_NAME} --versioning --update-labels=storage-for=fablefacet
@@ -37,7 +40,7 @@ cd function_code
 zip -r ../fablefacet.zip .
 cd ..
 gcloud storage cp fablefacet.zip gs://${BUCKET_NAME}/source/fablefacet.zip
-    
+
 echo "🛠️ Initing Terraform..."
 TOKEN=$(gcloud auth print-identity-token)
 export TF_IN_AUTOMATION=true
@@ -67,6 +70,11 @@ if [ $TF_EXIT_CODE -ne 0 ] || [ -f /tmp/tf_failed.flag ]; then
 
     exit 1
 else
+    # create the GCS usage dashboard
+    sed "s|{bucket_name}|$BUCKET_NAME|g" dashboards/gcs_usage.json > dashboards/gcs_usage_depl.json
+    gcloud monitoring dashboards create --config-from-file=dashboards/gcs_usage_depl.json
+    rm dashboards/gcs_usage_depl.json
+
     echo "✅ Success - Your-Fable-Cloud is installed. Get back to Fable Facet site to use it"
     echo
     echo "this script created one bucket on Cloud Storage, and one Cloud Run Function"

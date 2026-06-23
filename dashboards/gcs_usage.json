@@ -25,7 +25,7 @@
                     {   "outputFullDuration": true,
                         "timeSeriesFilter": 
                         {   "aggregation": 
-                            {   "alignmentPeriod": "{to_the_start_of_the_month}",
+                            {   "alignmentPeriod": "2592000s",
                                 "crossSeriesReducer": "REDUCE_SUM",
                                 "groupByFields": [],
                                 "perSeriesAligner": "ALIGN_SUM"
@@ -55,7 +55,7 @@
                     {   "outputFullDuration": true,
                         "timeSeriesFilter": 
                         {   "aggregation": 
-                            {   "alignmentPeriod": "1897980s",
+                            {   "alignmentPeriod": "2592000s",
                                 "crossSeriesReducer": "REDUCE_SUM",
                                 "groupByFields": [],
                                 "perSeriesAligner": "ALIGN_SUM"
@@ -102,7 +102,7 @@
                 "text": 
                 {   "content": "Please do not change this Dashboard, as Fable Facet site uses it and cannot restore it automatically back to this configuration. \r\n\r\nThe site may be unable to edit texts if this dashboard is modified. ",
                     "format": "MARKDOWN",
-                    "style": 
+                    "style":
                     {   "backgroundColor": "#FFFFFF",
                         "fontSize": "FS_LARGE",
                         "horizontalAlignment": "H_LEFT",

@@ -30,7 +30,7 @@
                                 "groupByFields": [],
                                 "perSeriesAligner": "ALIGN_SUM"
                             },
-                            "filter": "metric.type=\"storage.googleapis.com/api/request_count\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"{bucket_name}\" metric.label.\"method\"=\"WriteObject\""
+                            "filter": "metric.type=\"storage.googleapis.com/api/request_count\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"{bucket_name}\" metric.label.\"method\"=monitoring.regex.full_match(\"(WriteObject|ListObjects)\")"
                         },
                         "unitOverride": ""
                     }
@@ -60,7 +60,7 @@
                                 "groupByFields": [],
                                 "perSeriesAligner": "ALIGN_SUM"
                             },
-                            "filter": "metric.type=\"storage.googleapis.com/api/request_count\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"{bucket_name}\" metric.label.\"method\"=monitoring.regex.full_match(\"(ReadObject|ListObjects)\")"
+                            "filter": "metric.type=\"storage.googleapis.com/api/request_count\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"{bucket_name}\" metric.label.\"method\"=monitoring.regex.full_match(\"(ReadObject|GetObject)\")"
                         },
                         "unitOverride": ""
                     }

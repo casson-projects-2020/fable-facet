@@ -82,10 +82,10 @@
                     {   "outputFullDuration": true,
                         "timeSeriesFilter": 
                         {   "aggregation": 
-                            {   "alignmentPeriod": "60s",
+                            {   "alignmentPeriod": "86400s",
                                 "crossSeriesReducer": "REDUCE_SUM",
                                 "groupByFields": [],
-                                "perSeriesAligner": "ALIGN_MEAN"
+                                "perSeriesAligner": "ALIGN_NEXT_OLDER"
                             },
                             "filter": "metric.type=\"storage.googleapis.com/storage/total_bytes\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"{bucket_name}\""
                         }

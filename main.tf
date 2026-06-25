@@ -102,9 +102,21 @@ resource "google_service_account_iam_member" "allow_token_creation" {
   member             = "user:${local.email}" 
 }
 
-resource "google_project_iam_member" "function_monitoring_editor" {
+resource "google_project_iam_custom_role" "metadata_manager" {
+  role_id     = "fableMetadataManager"
+  title       = "Fablefacet Metadata Manager"
+  description = "Permissao exclusiva para ler e gravar metadados comuns do projeto"
+  project     = var.project_id
+
+  permissions = [
+    "compute.projects.get",
+    "compute.projects.setCommonInstanceMetadata"
+  ]
+}
+
+resource "google_project_iam_member" "cf_metadata_binding" {
   project = var.project_id
-  role    = "roles/monitoring.dashboardEditor"
+  role    = google_project_iam_custom_role.metadata_manager.id
   member  = "serviceAccount:${google_service_account.function_sa.email}"
 }
 

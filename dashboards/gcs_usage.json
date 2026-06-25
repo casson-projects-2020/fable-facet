@@ -25,12 +25,12 @@
                     {   "outputFullDuration": true,
                         "timeSeriesFilter": 
                         {   "aggregation": 
-                            {   "alignmentPeriod": "2592000s",
+                            {   "alignmentPeriod": "86400s",
                                 "crossSeriesReducer": "REDUCE_SUM",
                                 "groupByFields": [],
                                 "perSeriesAligner": "ALIGN_SUM"
                             },
-                            "filter": "metric.type=\"storage.googleapis.com/api/request_count\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"{bucket_name}\" metric.label.\"method\"=monitoring.regex.full_match(\"(WriteObject|ListObjects)\")"
+                            "filter": "metric.type=\"logging.googleapis.com/user/operations_gcs_fablefacet\" metric.label.\"operation_class\"=\"CLASS_A\" metric.label.\"month\"=\"2606\""
                         },
                         "unitOverride": ""
                     }
@@ -55,12 +55,12 @@
                     {   "outputFullDuration": true,
                         "timeSeriesFilter": 
                         {   "aggregation": 
-                            {   "alignmentPeriod": "2592000s",
+                            {   "alignmentPeriod": "86400s",
                                 "crossSeriesReducer": "REDUCE_SUM",
                                 "groupByFields": [],
                                 "perSeriesAligner": "ALIGN_SUM"
                             },
-                            "filter": "metric.type=\"storage.googleapis.com/api/request_count\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"{bucket_name}\" metric.label.\"method\"=monitoring.regex.full_match(\"(ReadObject|GetObject)\")"
+                            "filter": "metric.type=\"logging.googleapis.com/user/operations_gcs_fablefacet\" metric.label.\"operation_class\"=\"CLASS_B\" metric.label.\"month\"=\"2606\""
                         },
                         "unitOverride": ""
                     }
@@ -71,7 +71,7 @@
             "height": 8,
             "width": 16,
             "widget": 
-            {   "title": "FF storage - Free Tier Limit is 20GiB",
+            {   "title": "FF storage - Free Tier Limit is 5GiB {date_placeholder}",
                 "scorecard": 
                 {   "gaugeView": 
                     {   "lowerBound": 0,

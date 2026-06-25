@@ -68,7 +68,7 @@
             }
         },{
             "yPos": 16,
-            "height": 8,
+            "height": 16,
             "width": 16,
             "widget": 
             {   "title": "FF storage - Free Tier Limit is 5GiB {date_placeholder}",
@@ -95,12 +95,12 @@
         },{
             "yPos": 16,
             "xPos": 16,
-            "height": 8,
+            "height": 16,
             "width": 17,
             "widget": 
-            {   "title": "Do not change this dashboard",
+            {   "title": "Feel free to change or delete this dashboard",
                 "text": 
-                {   "content": "Please do not change this Dashboard, as Fable Facet site uses it and cannot restore it automatically back to this configuration. \r\n\r\nThe site may be unable to edit texts if this dashboard is modified. ",
+                {   "content": "Fable Facet site queries the underlying data source to obtain the results in the site, so this dashboard is just for your convenience (and for you to see that it is Google that is reporting the values). \r\n\r\nChanging or deleting it will have no effect on the site, but it will not revert back to this configuration or be recreated automatically.",
                     "format": "MARKDOWN",
                     "style":
                     {   "backgroundColor": "#FFFFFF",

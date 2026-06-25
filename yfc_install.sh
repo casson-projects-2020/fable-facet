@@ -70,10 +70,41 @@ if [ $TF_EXIT_CODE -ne 0 ] || [ -f /tmp/tf_failed.flag ]; then
 
     exit 1
 else
+    # create the metric for GCS usage dashboard
+cat << 'EOF' > metric_config.json
+{
+    "name": "operations_gcs_fablefacet",
+    "description": "Count GCS operations by class and month",
+    "filter": "jsonPayload.ticketing_tag=\"[TICKETING_METRIC]\"",
+    "metricDescriptor": 
+    {   "metricKind": "DELTA",
+        "valueType": "INT64",
+        "labels": [{
+            "key": "month",
+            "valueType": "STRING",
+            "description": "operation year and month"
+        },{
+            "key": "operation_class",
+            "valueType": "STRING",
+            "description": "classe A or B"
+        }]
+    },
+    "labelExtractors": 
+    {   "month": "EXTRACT(jsonPayload.curr_month)",
+        "operation_class": "EXTRACT(jsonPayload.operation_class)"
+    }
+}
+EOF
+
+    gcloud logging metrics create operations_gcs_fablefacet \
+    --config-from-file=metric_config.json \
+    --quiet 2>/dev/null || echo "Metric already exists, skipping"
+    
     # create the GCS usage dashboard
     sed "s|{bucket_name}|$BUCKET_NAME|g" dashboards/gcs_usage.json > dashboards/gcs_usage_depl.json
     gcloud monitoring dashboards create --config-from-file=dashboards/gcs_usage_depl.json
     rm dashboards/gcs_usage_depl.json
+    rm metric_config.json
 
     echo "✅ Success - Your-Fable-Cloud is installed. Get back to Fable Facet site to use it"
     echo

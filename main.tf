@@ -105,12 +105,12 @@ resource "google_service_account_iam_member" "allow_token_creation" {
 resource "google_project_iam_custom_role" "metadata_manager" {
   role_id     = "fableMetadataManager"
   title       = "Fablefacet Metadata Manager"
-  description = "Permissao exclusiva para ler e gravar metadados comuns do projeto"
+  description = "To read and update bucket labels as metadata"
   project     = var.project_id
 
   permissions = [
-    "compute.projects.get",
-    "compute.projects.setCommonInstanceMetadata"
+    "storage.buckets.get",
+    "storage.buckets.update"
   ]
 }
 

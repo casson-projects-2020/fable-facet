@@ -103,8 +103,8 @@ resource "google_service_account_iam_member" "allow_token_creation" {
 }
 
 resource "google_project_iam_custom_role" "metadata_manager" {
-  role_id     = "fableMetadataManager"
-  title       = "Fablefacet Metadata Manager"
+  role_id     = "fableBucketLabelManager"
+  title       = "Fablefacet Bucket Label Manager"
   description = "To read and update bucket labels as metadata"
   project     = var.project_id
 

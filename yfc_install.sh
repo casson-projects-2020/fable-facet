@@ -41,6 +41,23 @@ zip -r ../fablefacet.zip .
 cd ..
 gcloud storage cp fablefacet.zip gs://${BUCKET_NAME}/source/fablefacet.zip
 
+echo "🛠️ Installing Terraform..."
+
+TERRAFORM_DIR="$HOME/.terraform_bin"
+mkdir -p "$TERRAFORM_DIR"
+
+URL="https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip"
+
+curl -sSL "$URL" -o "$TERRAFORM_DIR/terraform.zip"
+unzip -q -o "$TERRAFORM_DIR/terraform.zip" -d "$TERRAFORM_DIR"
+rm "$TERRAFORM_DIR/terraform.zip"
+
+# Adiciona o diretório temporário ao PATH da execução atual do Bash
+export PATH="$TERRAFORM_DIR:$PATH"
+
+echo "==> Terraform installed. Version:"
+terraform -version
+
 echo "🛠️ Initing Terraform..."
 TOKEN=$(gcloud auth print-identity-token)
 export TF_IN_AUTOMATION=true

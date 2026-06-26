@@ -79,6 +79,83 @@ resource "google_project_service" "iap_api" {
   disable_on_destroy = false
 }
 
+resource "google_compute_network" "vpc_network" {
+  name                    = "app-ff-network"
+  auto_create_subnetworks = false
+}
+
+resource "google_compute_subnetwork" "vpc_subnet" {
+  name          = "app-ff-subnet"
+  ip_cidr_range = "10.128.0.0/24"
+  region        = "us-central1"
+  network       = google_compute_network.vpc_network.id
+}
+
+resource "google_compute_firewall" "allow_internal" {
+  name    = "allow-internal-traffic"
+  network = google_compute_network.vpc_network.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["8080"] 
+  }
+
+  source_ranges = ["10.128.0.0/24"]
+}
+
+resource "google_compute_firewall" "allow_public_crypto" {
+  name    = "allow-public-crypto-traffic"
+  network = google_compute_network.vpc_network.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["8443"]
+  }
+
+  source_ranges = ["0.0.0.0/0"] 
+}
+
+resource "google_compute_instance" "vm_free_tier" {
+  name         = "app-ia-backend-vm"
+  machine_type = "e2-micro" # Tipo obrigatório do Free Tier
+  zone         = "us-central1-a"
+
+  # Configuração do Disco Rígido Padrão (Obrigatório ser pd-standard para ser grátis)
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12" # Sistema operacional leve e estável
+      type  = "pd-standard"            # "Disco persistente padrão" (HDD) exigido pelo Free Tier
+      size  = 30                       # Limite máximo gratuito (30 GB)
+    }
+  }
+
+  # Configuração de Rede (Garante o IP Público Efêmero)
+  network_interface {
+    subnetwork = google_compute_subnetwork.vpc_subnet.id
+
+    access_config {
+      // Deixar este bloco vazio diz ao GCP para gerar um IP público EFÊMERO.
+      // IPs efêmeros atrelados a instâncias e2-micro são 100% gratuitos.
+    }
+  }
+
+  # 4. Automatização do ambiente (Startup Script)
+  # Aqui você pode colocar os comandos para instalar o Docker, LUKS, etc.
+  metadata_startup_script = <<-EOT
+    #!/bin/bash
+    apt-get update
+    apt-get install -y docker.io cryptsetup
+    
+    # Comandos para rodar o seu gerenciador, configurar o arquivo binário loopback, etc.
+    # Exemplo: docker run -d -p 8080:8080 -p 8443:8443 sua-imagem-ia:latest
+  EOT
+
+  # Permissões mínimas para a VM rodar (pode ser ajustado se ela precisar falar com o Secret Manager)
+  service_account {
+    scopes = ["cloud-platform"]
+  }
+}
+
 resource "google_service_account" "function_sa" {
   account_id   = "fable-facet-user"
   display_name = "Service Account to Your-Fable-Cloud function"
@@ -100,24 +177,6 @@ resource "google_service_account_iam_member" "allow_token_creation" {
   service_account_id = google_service_account.function_sa.name
   role               = "roles/iam.serviceAccountTokenCreator"
   member             = "user:${local.email}" 
-}
-
-resource "google_project_iam_custom_role" "metadata_manager" {
-  role_id     = "fableBucketLabelManager"
-  title       = "Fablefacet Bucket Label Manager"
-  description = "To read and update bucket labels as metadata"
-  project     = var.project_id
-
-  permissions = [
-    "storage.buckets.get",
-    "storage.buckets.update"
-  ]
-}
-
-resource "google_project_iam_member" "cf_metadata_binding" {
-  project = var.project_id
-  role    = google_project_iam_custom_role.metadata_manager.id
-  member  = "serviceAccount:${google_service_account.function_sa.email}"
 }
 
 resource "google_project_iam_member" "monitoring_viewer" {

@@ -2,7 +2,7 @@
 set -e
 
 apt-get update
-apt-get install -y python3 python3-pip python3-venv
+apt-get install -y python3 python3-pip python3-venv python3-websockets python3-cryptography
 
 mkdir -p /opt/app-ff
 cd /opt/app-ff
@@ -19,7 +19,7 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/app-websocket
+WorkingDirectory=/opt/app-ff
 ExecStart=/usr/bin/python3 server_websocket.py
 Restart=always
 RestartSec=5

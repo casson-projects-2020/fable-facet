@@ -16,14 +16,7 @@ terraform {
       source  = "hashicorp/null"
       version = "~> 3.0"
     }
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
-    }
   }
-}
-
-provider "cloudflare" {
 }
 
 variable "project_id"   {
@@ -69,7 +62,9 @@ locals {
     "people.googleapis.com",
     "apikeys.googleapis.com",
     "oslogin.googleapis.com",
-    "iam.googleapis.com"
+    "iam.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com"
   ]
 }
 
@@ -88,7 +83,21 @@ resource "google_project_service" "iap_api" {
   disable_on_destroy = false
 }
 
-data "cloudflare_ip_ranges" "cloudflare" {}
+data "http" "cloudflare_ips" {
+  url = "https://api.cloudflare.com/client/v4/ips"
+
+  request_headers = {
+    Accept = "application/json"
+  }
+}
+
+locals {
+  cloudflare_json = jsondecode(data.http.cloudflare_ips.response_body)
+  
+  # Listas limpas de CIDRs prontas para uso
+  cf_ipv4_blocks = local.cloudflare_json.result.ipv4_cidrs
+  cf_ipv6_blocks = local.cloudflare_json.result.ipv6_cidrs
+}
 
 resource "google_compute_network" "vpc_network" {
   name                    = "app-ff-network"
@@ -127,7 +136,7 @@ resource "google_compute_firewall" "allow_cloudflare_websocket" {
 
   target_tags = ["websocket-server"]
 
-  source_ranges = data.cloudflare_ip_ranges.cloudflare.ipv4_cidr_blocks
+  source_ranges = local.cf_ipv4_blocks
 }
 
 resource "google_service_account" "vm_isolated_sa" {
@@ -187,7 +196,7 @@ resource "google_service_account_iam_member" "allow_openid_impersonation" {
   member             = "user:${local.email}"
 }
 
-resource "google_service_account_iam_member" "allow_openid_impersonation" {
+resource "google_service_account_iam_member" "allow_openid_impersonation_sa" {
   service_account_id = google_service_account.function_sa.name
   role               = "roles/iam.serviceAccountOpenIdTokenCreator"
   member             = "serviceAccount:${google_service_account.function_sa.email}"
@@ -205,7 +214,7 @@ resource "google_project_iam_member" "monitoring_viewer" {
   member  = "serviceAccount:${google_service_account.function_sa.email}"
 }
 
-resource "google_service_account_iam_member" "allow_token_creation" {
+resource "google_service_account_iam_member" "allow_token_creation_sa" {
   service_account_id = google_service_account.function_sa.name
   role               = "roles/iam.serviceAccountTokenCreator"
   member             = "serviceAccount:${google_service_account.function_sa.email}" 
@@ -231,10 +240,29 @@ resource "google_project_iam_custom_role" "api_key_ops" {
   ]
 }
 
+resource "google_project_iam_custom_role" "vm_starter_role" {
+  role_id     = "compute.instanceStarterMinimal"
+  title       = "Compute Instance Starter Minimal"
+  description = "Check VM status and restart it if needed"
+  
+  permissions = [
+    "compute.instances.start",
+    "compute.instances.get"
+  ]
+}
+
 resource "google_project_iam_member" "cf_role_binding" {
   project = var.project_id
   role    = google_project_iam_custom_role.api_key_ops.id
   member  = "serviceAccount:${google_service_account.function_sa.email}"
+}
+
+resource "google_compute_instance_iam_member" "specific_vm_binding" {
+  project       = var.project_id
+  zone          = "us-central1-a"
+  instance_name = "app-ff-backend-vm"
+  role          = google_project_iam_custom_role.vm_starter_role.id
+  member        = "serviceAccount:${google_service_account.function_sa.email}"
 }
 
 resource "google_apikeys_key" "meta_key" {
@@ -244,7 +272,7 @@ resource "google_apikeys_key" "meta_key" {
   restrictions {
     api_targets {
       service = "people.googleapis.com"  # dummy restriction for security reasons
-      methods = "[GET*]"
+      methods = ["GET*"]
     }
 
     browser_key_restrictions {

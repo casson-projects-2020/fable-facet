@@ -6,17 +6,24 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "~> 5.0" # Força o uso da versão 5.x
+      version = "~> 5.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.0" # Isso garante estabilidade
+      version = "~> 3.0"
     }
     null = {
       source  = "hashicorp/null"
       version = "~> 3.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
   }
+}
+
+provider "cloudflare" {
 }
 
 variable "project_id"   {
@@ -60,7 +67,9 @@ locals {
     "artifactregistry.googleapis.com",
     "generativelanguage.googleapis.com",
     "people.googleapis.com",
-    "apikeys.googleapis.com"
+    "apikeys.googleapis.com",
+    "oslogin.googleapis.com",
+    "iam.googleapis.com"
   ]
 }
 
@@ -79,6 +88,8 @@ resource "google_project_service" "iap_api" {
   disable_on_destroy = false
 }
 
+data "cloudflare_ip_ranges" "cloudflare" {}
+
 resource "google_compute_network" "vpc_network" {
   name                    = "app-ff-network"
   auto_create_subnetworks = false
@@ -86,7 +97,7 @@ resource "google_compute_network" "vpc_network" {
 
 resource "google_compute_subnetwork" "vpc_subnet" {
   name          = "app-ff-subnet"
-  ip_cidr_range = "10.128.0.0/24"
+  ip_cidr_range = "10.10.1.0/24"
   region        = "us-central1"
   network       = google_compute_network.vpc_network.id
 }
@@ -100,60 +111,69 @@ resource "google_compute_firewall" "allow_internal" {
     ports    = ["8080"] 
   }
 
-  source_ranges = ["10.128.0.0/24"]
+  target_tags = ["websocket-server"]
+
+  source_ranges = ["10.10.1.0/24"]
 }
 
-resource "google_compute_firewall" "allow_public_crypto" {
-  name    = "allow-public-crypto-traffic"
+resource "google_compute_firewall" "allow_cloudflare_websocket" {
+  name    = "allow-cloudflare-websocket-traffic"
   network = google_compute_network.vpc_network.name
 
   allow {
     protocol = "tcp"
-    ports    = ["8443"]
+    ports    = ["8080"] 
   }
 
-  source_ranges = ["0.0.0.0/0"] 
+  target_tags = ["websocket-server"]
+
+  source_ranges = data.cloudflare_ip_ranges.cloudflare.ipv4_cidr_blocks
+}
+
+resource "google_service_account" "vm_isolated_sa" {
+  account_id   = "fable-facet-vm-sa"
+  display_name = "Isolated Service Account for Fable Facet VM"
+
+  depends_on = [google_project_service.apis]
 }
 
 resource "google_compute_instance" "vm_free_tier" {
-  name         = "app-ia-backend-vm"
-  machine_type = "e2-micro" # Tipo obrigatório do Free Tier
+  name         = "app-ff-backend-vm"
+  machine_type = "e2-micro" # Free Tier
   zone         = "us-central1-a"
 
-  # Configuração do Disco Rígido Padrão (Obrigatório ser pd-standard para ser grátis)
+  tags = ["websocket-server"]
+
+  metadata = {
+    enable-oslogin = "TRUE"
+  }
+  
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-12" # Sistema operacional leve e estável
-      type  = "pd-standard"            # "Disco persistente padrão" (HDD) exigido pelo Free Tier
-      size  = 30                       # Limite máximo gratuito (30 GB)
+      image = "debian-cloud/debian-12"
+      type  = "pd-standard"
+      size  = 30
     }
   }
 
-  # Configuração de Rede (Garante o IP Público Efêmero)
   network_interface {
     subnetwork = google_compute_subnetwork.vpc_subnet.id
+    access_config {}
+  } 
 
-    access_config {
-      // Deixar este bloco vazio diz ao GCP para gerar um IP público EFÊMERO.
-      // IPs efêmeros atrelados a instâncias e2-micro são 100% gratuitos.
-    }
-  }
-
-  # 4. Automatização do ambiente (Startup Script)
-  # Aqui você pode colocar os comandos para instalar o Docker, LUKS, etc.
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    apt-get update
-    apt-get install -y docker.io cryptsetup
-    
-    # Comandos para rodar o seu gerenciador, configurar o arquivo binário loopback, etc.
-    # Exemplo: docker run -d -p 8080:8080 -p 8443:8443 sua-imagem-ia:latest
-  EOT
-
-  # Permissões mínimas para a VM rodar (pode ser ajustado se ela precisar falar com o Secret Manager)
   service_account {
-    scopes = ["cloud-platform"]
+    email  = google_service_account.vm_isolated_sa.email
+    scopes = ["cloud-platform"] 
   }
+
+  depends_on = [
+    google_project_service.apis,
+    google_service_account.vm_isolated_sa
+  ]
+
+  metadata_startup_script = templatefile("${path.module}/startup_vm.sh", {
+    PYTHON_CODE = file("${path.module}/websocket_server_vm.py")
+  })
 }
 
 resource "google_service_account" "function_sa" {

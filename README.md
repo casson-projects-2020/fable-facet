@@ -3,7 +3,7 @@ If you install this, it probably won't work, and it is outdated. If you want to 
 
 For now, I will be removing main.tf (terraform source that configs the GCP account) from the repo to prevent installation - as incorrect installation may leave artifacts that would have to be dealt with manually.
 
-I hope to put the site on Alpha in a few weeks.
+I hope to put the site on Alpha in a few weeks (edited on 22 July 2026).
 
 # Fable Facet - Your-Cloud-Facet
 Your-Cloud-Facet is the infrastructure component of Fable Facet. It enables a "Bring Your Own Infrastructure" (BYOI) model, allowing developers / authors to use AI-assisted writing tools hosted on their own Google Cloud environment to create and publish texts on the community created by the site.

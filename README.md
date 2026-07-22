@@ -1,3 +1,8 @@
+# Important: this is under development and not yet operating.
+If you install this, it probably won't work, and it is outdated. If you want to analyze the code, it is better to do that in this repo for now, as all the open source code is in here.
+
+I hope to put the site on Alpha in a few weeks.
+
 # Fable Facet - Your-Fable-Cloud
 Your-Fable-Cloud is the infrastructure component of Fable Facet. It enables a "Bring Your Own Infrastructure" (BYOI) model, allowing developers / authors to use AI-assisted writing tools hosted on their own Google Cloud environment to create and publish texts on the community created by the site.
 

@@ -13,7 +13,7 @@ Your-Cloud-Facet is the infrastructure component of Fable Facet. It enables a "B
 This is a "Open In Google Cloud Shell" repo - it will create in your Google Cloud Platform (GCP) account the infrastructure that you will join to the site 
 [Fable Facet](https://fablefacet.com/ffacet.mesis.html). While this will be needed for you to be able to publish in the site, your GCP resources will be used only to process content you create - they will never be shared with Fable Facet or others.  
 
-The system is designed to aid fictional writing, in an interactive reading experience - you the author (or another reader) in the role of the protagonist (or other character) while the AI generates the story as you go, follow previously written guidelines and on-the-fly guidance.
+The system is designed to aid fictional writing, in an interactive reading experience - you the author (or another reader) in the role of the protagonist (or other character) while the AI generates the story as you go, following previously written guidelines and on-the-fly guidance.
 
 By installing this backend in your own GCP account, you maintain control over your data and usage. The system is designed to be inside the always-free tier on GCP, but if you already use the free tier in other projects you will have to manage this aspect.
  

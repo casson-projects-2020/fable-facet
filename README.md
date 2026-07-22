@@ -1,5 +1,7 @@
 # Important: this is under development and not yet operating.
-If you install this, it probably won't work, and it is outdated. If you want to analyze the code, it is better to do that in this repo for now, as all the open source code is in here.
+If you install this, it probably won't work, and it is outdated. If you want to analyze the code, it is better to do that in this repo for now, as all the open source code is in here. 
+
+For now, I will be removing main.tf (terraform source that configs the GCP account) from the repo to prevent installation - as incorrect installation may leave artifacts that would have to be dealt with manually.
 
 I hope to put the site on Alpha in a few weeks.
 
